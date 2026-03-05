@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Input</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Health Input Page</h1>
+
+<div class="tabs">
+<button onclick="showManual()">Manual Input</button>
+<button onclick="showWearable()">Wearable Sync</button>
+</div>
+
+<!-- Manual Form -->
+<div id="manualForm">
+
+<h2>Enter Health Vitals</h2>
+
+<label for="hr">Resting Heart Rate</label>
+<input type="number" id="hr">
+
+<label for="sleep">Sleep Hours</label>
+<input type="number" id="sleep">
+
+<label for="activity">Activity Minutes</label>
+<input type="number" id="activity">
+
+<label for="spo2">SpO2</label>
+<input type="number" id="spo2">
+
+<br><br>
+
+<button onclick="submitVitals()">Submit Vitals</button>
+
+</div>
+
+<!-- Wearable -->
+<div id="wearable" style="display:none">
+
+<h2>Connect Wearable Device</h2>
+<p>Sync your smartwatch or fitness band</p>
+
+<button>Sync Device</button>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
