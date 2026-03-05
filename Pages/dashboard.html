@@ -3,9 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>NutriSync · health dashboard</title>
+    <!-- Font Awesome 6 (free) for icons & modern look -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f5fa 0%, #e9f0f7 100%);
+            min-height: 100vh;
+            padding: 1.5rem 2rem;
+        }
+
+        /* ----- modern glassy navbar ----- */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 12px 28px -8px rgba(0, 32, 64, 0.12), 0 4px 12px rgba(0, 20, 40, 0.06);
+            border-radius: 2rem;
+            padding: 0.9rem 2rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .logo {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(125deg, #1B4A3D, #2D6E5E);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .logo i {
+            color: #2F8F7A;
+            margin-right: 6px;
+            font-size: 2rem;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            color: #2e7a68;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1.8rem;
+            align-items: center;
+        }
+        .nav-right .icon-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.7rem;
+            cursor: pointer;
+            color: #2a4e44;
+            transition: 0.2s ease;
+            position: relative;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 6px 14px rgba(0, 30, 20, 0.1);
+        }
+        .nav-right .icon-btn:hover {
+            background: white;
+            color: #0f3d32;
+            transform: scale(1.08);
+            box-shadow: 0 12px 18px -8px #1d5e4d70;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 10px;
+            height: 10px;
+            background: #e05f5f;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* ----- 4 metric cards row (heart, spo2, water, sleep) ----- */
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.8rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.6rem 1.2rem 1.4rem 1.8rem;
+            box-shadow: 0 20px 35px -10px rgba(30, 65, 55, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #c0dfd5;
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #215a4c;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+        }
+        .metric-header i {
+            font-size: 1.8rem;
+            background: #dcf0ea;
+            padding: 10px;
+            border-radius: 18px;
+            color: #0f463a;
+        }
+
+        .metric-value {
+            font-size: 2.7rem;
+            font-weight: 700;
+            color: #173e34;
+            line-height: 1.2;
+        }
+        .metric-unit {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #548377;
+            margin-left: 5px;
+        }
+        .trend { font-size: 0.9rem; color: #3c7668; margin-top: 8px; }
+
+        /* ----- user profile card (info + contact + goal) ----- */
+        .profile-section {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 30px -10px #bcd9d0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        .avatar-frame {
+            background: linear-gradient(145deg, #8fc1b5, #b7e0d4);
+            border-radius: 50%;
+            padding: 4px;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            color: #1c5b4b;
+        }
+
+        .details p {
+            font-size: 1.2rem;
+            margin: 6px 0;
+            color: #1e4d40;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .details i {
+            width: 28px;
+            color: #2b7d68;
+            font-size: 1.3rem;
+        }
+        .contact-goal {
+            background: #dcf2eb;
+            padding: 1rem 2rem;
+            border-radius: 3rem;
+            color: #0a352b;
+            font-weight: 500;
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .contact-goal span { display: flex; align-items: center; gap: 10px; }
+
+        /* ----- 3 diet cards (column) breakfast, lunch, dinner ----- */
+        .diet-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .diet-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 1.8rem;
+            padding: 1.5rem 2rem;
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 16px 28px -14px #2b6e5d30;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            transition: all 0.2s;
+        }
+        .diet-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #9fdacb;
+        }
+
+        .diet-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 2;
+        }
+        .diet-name {
+            font-size: 1.8rem;
+            font-weight: 650;
+            color: #1e4f42;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .diet-name i {
+            font-size: 2rem;
+            background: #c3eadf;
+            padding: 10px;
+            border-radius: 1.2rem;
+            color: #115a47;
+        }
+        .diet-cal {
+            font-size: 1.2rem;
+            color: #457a6b;
+            background: #e4f9f1;
+            padding: 0.3rem 1.2rem;
+            border-radius: 3rem;
+            display: inline-block;
+            width: fit-content;
+            font-weight: 500;
+        }
+
+        .diet-button {
+            background: #226d5b;
+            border: none;
+            color: white;
+            font-size: 1.15rem;
+            font-weight: 500;
+            padding: 0.9rem 2.2rem;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 14px -6px #1d5b4b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .diet-button i { font-size: 1.2rem; }
+        .diet-button:hover {
+            background: #2d8873;
+            transform: scale(1.02);
+            box-shadow: 0 14px 22px -8px #165f4e;
+        }
+
+        /* ----- modal/popup (why this diet) ----- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(20, 50, 40, 0.3);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-card {
+            background: #f4fcf9;
+            max-width: 450px;
+            width: 90%;
+            border-radius: 2.5rem;
+            padding: 2rem 2rem 1.8rem;
+            box-shadow: 0 40px 70px -10px #0b352b;
+            border: 2px solid white;
+            animation: softPop 0.25s ease;
+        }
+        @keyframes softPop {
+            0% { opacity: 0.6; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+        .modal-header h2 {
+            color: #154e3f;
+            font-size: 2rem;
+            font-weight: 650;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #286b5a;
+        }
+        .modal-body {
+            font-size: 1.25rem;
+            color: #1f4d3f;
+            line-height: 1.6;
+            padding: 0.5rem 0;
+        }
+        .modal-body i {
+            color: #328d76;
+            font-size: 2rem;
+            display: block;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .modal-reason {
+            background: #d7f0e8;
+            border-radius: 1.5rem;
+            padding: 1.4rem;
+            font-size: 1.1rem;
+            border-left: 6px solid #328d76;
+        }
+
+        /* responsiveness & fine details */
+        @media (max-width: 900px) {
+            body { padding: 1rem; }
+            .cards-row { grid-template-columns: repeat(2,1fr); }
+            .profile-section { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        }
+        @media (max-width: 550px) {
+            .cards-row { grid-template-columns: 1fr; }
+        }
+        .footer-note {
+            margin-top: 3rem;
+            text-align: center;
+            color: #568d7d;
+            font-weight: 400;
+        }
+    </style>
 </head>
 <body>
-    
+
+    <!-- navigation bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-leaf"></i> NutriSync
+        </div>
+        <div class="nav-right">
+            <button class="icon-btn" id="notifBtn" aria-label="notifications">
+                <img src="" alt="">
+                <span class="notification-badge"></span>
+            </button>
+            <button class="icon-btn" id="logoutBtn" aria-label="logout">
+                <i class="fa-regular fa-circle-right"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 4 metric cards: heart rate, spo2, water, sleep -->
+    <div class="cards-row">
+        <div class="metric-card">
+            <div class="metric-header"><i class="fa-solid fa-heart-pulse"></i> Heart rate</div>
+            <div class="metric-value">72 <span class="metric-unit">bpm</span></div>
+            <div class="trend"><i class="fa-regular fa-circle-check"></i> resting, normal</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-header"><i class="fa-solid fa-lungs"></i> SpO₂</div>
+            <div class="metric-value">98 <span class="metric-unit">%</span></div>
+            <div class="trend"><i class="fa-regular fa-sun"></i> excellent</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-header"><i class="fa-solid fa-droplet"></i> Water intake</div>
+            <div class="metric-value">1.9 <span class="metric-unit">L</span></div>
+            <div class="trend"><i class="fa-regular fa-clock"></i> goal: 2.5L</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-header"><i class="fa-solid fa-moon"></i> Sleep hrs</div>
+            <div class="metric-value">7.2 <span class="metric-unit">h</span></div>
+            <div class="trend"><i class="fa-regular fa-star"></i> +42min deep</div>
+        </div>
+    </div>
+
+    <!-- user information block (name, age, weight, height, contact, goal) -->
+    <div class="profile-section">
+        <div class="user-info">
+            <div class="avatar-frame">
+                <div class="avatar"><i class="fa-regular fa-user"></i></div>
+            </div>
+            <div class="details">
+                <p><i class="fa-regular fa-user"></i> <strong>Alex Morgan</strong>  ·  32 yrs</p>
+                <p><i class="fa-regular fa-weight-scale"></i> 74 kg  ·  <i class="fa-regular fa-ruler"></i> 178 cm</p>
+            </div>
+        </div>
+        <div class="contact-goal">
+            <span><i class="fa-regular fa-envelope"></i> alex.m@nutrisync.com</span>
+            <span><i class="fa-regular fa-flag"></i> goal: fat loss & toning</span>
+        </div>
+    </div>
+
+    <!-- three diet cards (breakfast, lunch, dinner) suggested by AI -->
+    <div class="diet-column">
+        <!-- breakfast card -->
+        <div class="diet-card" id="breakfast-card">
+            <div class="diet-info">
+                <div class="diet-name"><i class="fa-solid fa-sun-bright"></i> Breakfast · Berry Oatmeal</div>
+                <span class="diet-cal"><i class="fa-regular fa-fire"></i> 385 kcal</span>
+            </div>
+            <button class="diet-button" data-meal="breakfast"><i class="fa-regular fa-lightbulb"></i> why this?</button>
+        </div>
+        <!-- lunch card -->
+        <div class="diet-card" id="lunch-card">
+            <div class="diet-info">
+                <div class="diet-name"><i class="fa-solid fa-bowl-food"></i> Lunch · Quinoa bowl</div>
+                <span class="diet-cal"><i class="fa-regular fa-fire"></i> 520 kcal</span>
+            </div>
+            <button class="diet-button" data-meal="lunch"><i class="fa-regular fa-lightbulb"></i> why this?</button>
+        </div>
+        <!-- dinner card -->
+        <div class="diet-card" id="dinner-card">
+            <div class="diet-info">
+                <div class="diet-name"><i class="fa-solid fa-moon-stars"></i> Dinner · Salmon & greens</div>
+                <span class="diet-cal"><i class="fa-regular fa-fire"></i> 495 kcal</span>
+            </div>
+            <button class="diet-button" data-meal="dinner"><i class="fa-regular fa-lightbulb"></i> why this?</button>
+        </div>
+    </div>
+
+    <!-- modal popup (hidden by default) shows "why this diet suggested" -->
+    <div id="dietModal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="modalMealTitle">Breakfast</h2>
+                <button class="close-modal" id="closeModalBtn"><i class="fa-regular fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <i class="fa-regular fa-sparkles" style="color: #328d76;"></i>
+                <div id="modalReason" class="modal-reason">
+                    <!-- dynamic reason filled by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- subtle footer (just for style) -->
+    <div class="footer-note">
+        <i class="fa-regular fa-robot"></i> AI personalized meal suggestions · based on your metrics & goals
+    </div>
+
+    <script>
+        (function() {
+            // get modal elements
+            const modal = document.getElementById('dietModal');
+            const modalTitle = document.getElementById('modalMealTitle');
+            const modalReason = document.getElementById('modalReason');
+            const closeBtn = document.getElementById('closeModalBtn');
+
+            // mapping of meal to dynamic content (why AI suggested)
+            const whyTexts = {
+                breakfast: {
+                    title: 'Breakfast · Berry Oatmeal',
+                    reason: 'Rich in slow-release carbs and antioxidants. Your morning heart rate (72 bpm) benefits from steady energy; berries reduce oxidative stress. Fibre supports your fat loss goal.'
+                },
+                lunch: {
+                    title: 'Lunch · Quinoa bowl',
+                    reason: 'High plant protein & quinoa’s complete amino acids align with your muscle tone goal. Based on your activity level, 520 kcal maintains energy without excess. Magnesium helps SpO₂ transport.'
+                },
+                dinner: {
+                    title: 'Dinner · Salmon & greens',
+                    reason: 'Omega‑3 fatty acids support heart rate variability & deep sleep (you got 7.2h). Lean protein preserves muscle while in calorie deficit for fat loss. Iron from greens boosts oxygen.'
+                }
+            };
+
+            // Attach event listeners to all diet buttons
+            const dietButtons = document.querySelectorAll('.diet-button');
+            dietButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const meal = btn.getAttribute('data-meal'); // breakfast, lunch, dinner
+                    if (meal && whyTexts[meal]) {
+                        modalTitle.innerText = whyTexts[meal].title;
+                        modalReason.innerText = whyTexts[meal].reason;
+                        modal.style.display = 'flex';
+                    } else {
+                        // fallback (just in case)
+                        modalTitle.innerText = 'Meal suggestion';
+                        modalReason.innerText = 'This meal aligns with your current biometrics and weekly goal.';
+                        modal.style.display = 'flex';
+                    }
+                });
+            });
+
+            // close modal when clicking on X or outside modal-card
+            const closeModal = () => { modal.style.display = 'none'; };
+            closeBtn.addEventListener('click', closeModal);
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // notification icon (simulate toast / just a playful feedback)
+            document.getElementById('notifBtn').addEventListener('click', ()=>{
+                alert('🔔 You have 3 new insights from your health tracker.');
+            });
+
+            // logout icon (simple demo)
+            document.getElementById('logoutBtn').addEventListener('click', ()=>{
+                if (confirm('Logout from NutriSync?')) {
+                    alert('You have been logged out (demo).');
+                }
+            });
+
+            // optional: hover / smoothness
+        })();
+    </script>
+
+    <!-- additional style for inter font (optional) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
 </body>
 </html>
