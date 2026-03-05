@@ -8,43 +8,60 @@
 
 <body>
 
-<h1>Health Input Page</h1>
+<div class="container">
+
+<h1>Health Input Dashboard</h1>
 
 <div class="tabs">
-<button onclick="showManual()">Manual Input</button>
-<button onclick="showWearable()">Wearable Sync</button>
+<button id="manualBtn" onclick="showManual()">Manual Input</button>
+<button id="wearableBtn" onclick="showWearable()">Wearable Sync</button>
 </div>
 
-<!-- Manual Form -->
-<div id="manualForm">
+<!-- Manual Input -->
+
+<div class="card" id="manualForm">
 
 <h2>Enter Health Vitals</h2>
 
-<label>Resting Heart Rate</label>
-<input type="number" id="hr">
+<div class="input-group">
+<label>Resting Heart Rate (40 - 120 bpm)</label>
+<input type="range" min="40" max="120" value="70" id="hr" oninput="updateValue('hrVal',this.value)">
+<span id="hrVal">70</span>
+</div>
 
-<label>Sleep Hours</label>
-<input type="number" id="sleep">
+<div class="input-group">
+<label>Sleep Hours (0 - 12 hrs)</label>
+<input type="range" min="0" max="12" value="7" id="sleep" oninput="updateValue('sleepVal',this.value)">
+<span id="sleepVal">7</span>
+</div>
 
-<label>Activity Minutes</label>
-<input type="number" id="activity">
+<div class="input-group">
+<label>Activity Minutes (0 - 180 mins)</label>
+<input type="range" min="0" max="180" value="30" id="activity" oninput="updateValue('actVal',this.value)">
+<span id="actVal">30</span>
+</div>
 
-<label>SpO2</label>
-<input type="number" id="spo2">
+<div class="input-group">
+<label>SpO2 Level (90 - 100%)</label>
+<input type="range" min="90" max="100" value="98" id="spo2" oninput="updateValue('spo2Val',this.value)">
+<span id="spo2Val">98</span>
+</div>
 
-<br><br>
-
-<button onclick="submitVitals()">Submit Vitals</button>
+<button class="submit-btn" onclick="submitVitals()">Submit Vitals</button>
 
 </div>
 
 <!-- Wearable -->
-<div id="wearable" style="display:none">
+
+<div class="card" id="wearable" style="display:none">
 
 <h2>Connect Wearable Device</h2>
-<p>Sync your smartwatch or fitness band</p>
 
-<button>Sync Device</button>
+<p>Sync your smartwatch or fitness band to automatically import health data.</p>
+
+<button class="sync-btn">Sync Device</button>
+
+</div>
 
 </div>
 
