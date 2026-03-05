@@ -9,10 +9,6 @@ document.getElementById("manualForm").style.display="none";
 document.getElementById("wearable").style.display="block";
 }
 
-function updateValue(id,value){
-document.getElementById(id).innerText=value;
-}
-
 function submitVitals(){
 
 let hr=document.getElementById("hr").value
@@ -20,15 +16,39 @@ let sleep=document.getElementById("sleep").value
 let activity=document.getElementById("activity").value
 let spo2=document.getElementById("spo2").value
 
-// Basic validation
+let valid=true
 
+// Clear old errors
+document.getElementById("hrError").innerText=""
+document.getElementById("sleepError").innerText=""
+document.getElementById("activityError").innerText=""
+document.getElementById("spo2Error").innerText=""
+
+// Heart Rate Validation
 if(hr<40 || hr>120){
-alert("Heart Rate out of range")
-return
+document.getElementById("hrError").innerText="Heart rate must be between 40 - 120"
+valid=false
 }
 
-if(spo2<90){
-alert("SpO2 too low. Please check health condition.")
+// Sleep Validation
+if(sleep<0 || sleep>12){
+document.getElementById("sleepError").innerText="Sleep must be between 0 - 12 hours"
+valid=false
+}
+
+// Activity Validation
+if(activity<0 || activity>180){
+document.getElementById("activityError").innerText="Activity must be between 0 - 180 minutes"
+valid=false
+}
+
+// SpO2 Validation
+if(spo2<90 || spo2>100){
+document.getElementById("spo2Error").innerText="SpO2 must be between 90 - 100"
+valid=false
+}
+
+if(!valid){
 return
 }
 
@@ -39,32 +59,8 @@ activity_minutes:activity,
 spo2:spo2
 }
 
-console.log("Vitals Data:",vitalsData)
+console.log(vitalsData)
 
-// API call example
-
-fetch("/api/vitals/",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify(vitalsData)
-
-})
-
-.then(res=>res.json())
-.then(data=>{
-
-console.log("Server Response:",data)
 alert("Vitals Submitted Successfully")
-
-})
-
-.catch(error=>{
-console.log(error)
-})
 
 }
