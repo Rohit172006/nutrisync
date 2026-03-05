@@ -20,7 +20,7 @@ password
 .then(res=>res.json())
 .then(data=>{
 alert(data.message);
-window.location="index.html";
+window.location.href="index.html";
 })
 
 }
@@ -49,7 +49,6 @@ if(data.token){
 
 localStorage.setItem("token",data.token);
 
-window.location="pages/dashboard.html";
 
 }else{
 alert(data.message)
