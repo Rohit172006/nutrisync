@@ -24,7 +24,6 @@ Dinner: ${plan.meals.dinner?.meal_name || "None"}
 Explain clearly and professionally why this meal plan is suitable.
 Keep explanation under 250 words.
 `;
-
         const response = await axios.post(
             "http://127.0.0.1:11434/api/generate",
             {
