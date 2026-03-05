@@ -1,597 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriSync · soft dashboard</title>
-    <!-- Font Awesome (free) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Inter font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriSync Dashboard</title>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #e6f3ef;  /* soft green backdrop */
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 1.2rem 0.5rem;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-        /* main container: 88% width, weightless appearance */
-        .dashboard {
-            width: 88%;
-            max-width: 1400px;
-            background: transparent;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        /* ----- navbar (soft, minimal) ----- */
-        .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border-radius: 3rem;
-            padding: 0.7rem 2rem;
-            border: 1px solid rgba(180, 215, 200, 0.5);
-            box-shadow: 0 6px 18px rgba(140, 180, 160, 0.1);
-        }
+<style>
 
-        .logo {
-            font-size: 1.7rem;
-            font-weight: 600;
-            color: #1a5c4b;
-            letter-spacing: -0.3px;
-        }
-        .logo i {
-            color: #2f8b72;
-            margin-right: 6px;
-            font-size: 1.9rem;
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-        .nav-right {
-            display: flex;
-            gap: 1.2rem;
-        }
-        .nav-right .icon-btn {
-            background: rgba(255, 255, 255, 0.7);
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #1e5f4d;
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 4px 8px rgba(100, 140, 120, 0.1);
-            transition: 0.15s;
-        }
-        .nav-right .icon-btn:hover {
-            background: white;
-            color: #0d4638;
-        }
-        .notification-badge {
-            position: absolute;
-            margin-top: -20px;
-            margin-left: 18px;
-            width: 10px;
-            height: 10px;
-            background: #f08f8f;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
+:root{
 
-        /* ----- 4 metric cards row (soft & dynamic background) ----- */
-        .cards-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.2rem;
-        }
+--bg-main:#0f2f28;
+--bg-soft:#163f35;
+--bg-card:#1e4f43;
 
-        .metric-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
-            border-radius: 2rem;
-            padding: 1.3rem 1.2rem;
-            border: 1px solid rgba(190, 225, 210, 0.6);
-            box-shadow: 0 8px 18px -8px rgba(70, 120, 100, 0.15);
-            transition: all 0.2s;
-        }
+--green-main:#2bbf90;
+--green-light:#45d3a3;
+--green-soft:#2a6d5a;
 
-        .metric-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #236654;
-            font-weight: 500;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-        .metric-header i {
-            font-size: 1.6rem;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 8px;
-            border-radius: 16px;
-            color: #166b54;
-        }
+--text-main:#d9f7ee;
+--text-soft:#9dd6c5;
 
-        .metric-value {
-            font-size: 2.3rem;
-            font-weight: 600;
-            color: #173e34;
-            line-height: 1.2;
-        }
-        .metric-unit {
-            font-size: 0.95rem;
-            font-weight: 400;
-            color: #528d7b;
-            margin-left: 4px;
-        }
-        .trend {
-            font-size: 0.9rem;
-            margin-top: 8px;
-            font-weight: 500;
-        }
+--border-soft:#2e6b5c;
 
-        /* dynamic colors for trend & card border (set via js) */
-        .metric-card.excellent { border-left: 6px solid #2b8c6f; }
-        .metric-card.good { border-left: 6px solid #d4b86a; }
-        .metric-card.caution { border-left: 6px solid #d47b7b; }
+--warning:#e0b24c;
+--danger:#e07a7a;
 
-        /* ----- detailed user information card (extended) ----- */
-        .profile-detailed {
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(4px);
-            border-radius: 2.2rem;
-            padding: 1.6rem 2rem;
-            border: 1px solid rgba(170, 210, 190, 0.5);
-            box-shadow: 0 12px 28px -12px #9bc0b0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            gap: 2rem 3rem;
-        }
+}
 
-        .user-avatar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .avatar-circle {
-            background: #c4e6db;
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #1b735d;
-            border: 3px solid white;
-        }
-        .user-avatar span {
-            color: #1f5b4b;
-            font-weight: 500;
-        }
+body{
+font-family:'Inter',sans-serif;
+background:linear-gradient(140deg,#0f2f28,#18473c,#0f2f28);
+min-height:100vh;
+display:flex;
+justify-content:center;
+padding:30px;
+color:var(--text-main);
+}
 
-        .info-grid {
-            display: flex;
-            flex-wrap: wrap;
-            column-gap: 3rem;
-            row-gap: 1rem;
-            flex: 1;
-        }
-        .info-item {
-            min-width: 170px;
-        }
-        .info-item .label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #467a69;
-            font-weight: 500;
-        }
-        .info-item .value {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #1b4a3d;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 4px;
-        }
-        .info-item .value i {
-            color: #2b886d;
-            font-size: 1.3rem;
-            width: 28px;
-        }
-        .extra-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            margin-top: 0.8rem;
-            width: 100%;
-            background: rgba(230, 250, 240, 0.5);
-            padding: 1rem 1.8rem;
-            border-radius: 2.5rem;
-        }
-        .extra-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #1c5a48;
-        }
-        .extra-item i {
-            font-size: 1.4rem;
-            background: #d0eee2;
-            padding: 6px;
-            border-radius: 50%;
-        }
+.dashboard{
+width:90%;
+max-width:1300px;
+display:flex;
+flex-direction:column;
+gap:25px;
+}
 
-        /* ----- diet cards (soft, compact) ----- */
-        .diet-column {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
 
-        .diet-card {
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(4px);
-            border-radius: 1.8rem;
-            padding: 1.2rem 1.8rem;
-            border: 1px solid rgba(200, 230, 215, 0.7);
-            box-shadow: 0 6px 14px rgba(140, 180, 160, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
+/* NAVBAR */
 
-        .diet-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .diet-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1d5f4c;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .diet-name i {
-            font-size: 1.7rem;
-            background: #dcf3ea;
-            padding: 8px;
-            border-radius: 1rem;
-            color: #1b735d;
-        }
-        .diet-cal {
-            font-size: 1rem;
-            color: #3f7e6b;
-            background: #e1f3ec;
-            padding: 0.2rem 1.2rem;
-            border-radius: 3rem;
-            width: fit-content;
-        }
+.navbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:var(--bg-soft);
+padding:15px 30px;
+border-radius:40px;
+border:1px solid var(--border-soft);
+}
 
-        .diet-button {
-            background: #e7f5ef;
-            border: 1px solid #abd7c8;
-            color: #1b6753;
-            font-size: 1rem;
-            font-weight: 500;
-            padding: 0.7rem 1.8rem;
-            border-radius: 3rem;
-            cursor: pointer;
-            transition: 0.15s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 8px rgba(80, 130, 110, 0.1);
-        }
-        .diet-button:hover {
-            background: #c1ecd9;
-            border-color: #80c0a8;
-        }
+.logo{
+font-size:24px;
+font-weight:600;
+color:var(--green-light);
+}
 
-        /* modal – lightweight */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(30, 70, 60, 0.2);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-card {
-            background: #f5fef9;
-            border-radius: 2.2rem;
-            padding: 1.8rem 2rem;
-            max-width: 400px;
-            border: 2px solid white;
-            box-shadow: 0 30px 50px -20px #1b5343;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        }
-        .modal-header h2 { color: #135544; }
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #267a62;
-        }
-        .modal-reason {
-            background: #dff3eb;
-            border-radius: 1.2rem;
-            padding: 1.2rem;
-            color: #194e3f;
-            line-height: 1.5;
-        }
+.logo i{
+margin-right:8px;
+}
 
-        /* minor responsiveness */
-        @media (max-width: 1000px) {
-            .dashboard { width: 95%; }
-            .cards-row { grid-template-columns: repeat(2,1fr); }
-        }
-        @media (max-width: 700px) {
-            .cards-row { grid-template-columns: 1fr; }
-        }
+.nav-right{
+display:flex;
+gap:15px;
+}
 
-        /* hidden helper for input simulation (demo) */
-        .hidden-input-note {
-            opacity: 0.7;
-            background: #def0e7;
-            padding: 0.5rem 1.2rem;
-            border-radius: 2rem;
-            font-size: 0.9rem;
-            color: #215e4b;
-            margin-top: 0.3rem;
-            text-align: center;
-            border: 1px dashed #6aa290;
-        }
-    </style>
+.icon-btn{
+background:var(--bg-card);
+border:none;
+color:var(--green-light);
+font-size:18px;
+width:45px;
+height:45px;
+border-radius:50%;
+cursor:pointer;
+}
+
+.icon-btn:hover{
+background:var(--green-soft);
+}
+
+
+/* METRIC CARDS */
+
+.cards-row{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
+
+.metric-card{
+background:var(--bg-card);
+padding:20px;
+border-radius:20px;
+border:1px solid var(--border-soft);
+}
+
+.metric-header{
+display:flex;
+align-items:center;
+gap:10px;
+color:var(--green-light);
+margin-bottom:10px;
+}
+
+.metric-header i{
+font-size:20px;
+background:var(--bg-soft);
+padding:10px;
+border-radius:10px;
+}
+
+.metric-value{
+font-size:30px;
+font-weight:600;
+}
+
+.metric-unit{
+font-size:14px;
+color:var(--text-soft);
+}
+
+.trend{
+font-size:13px;
+margin-top:5px;
+color:var(--text-soft);
+}
+
+
+/* USER DATA */
+
+.user-data{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
+background:var(--bg-card);
+padding:25px;
+border-radius:20px;
+border:1px solid var(--border-soft);
+}
+
+.data-item{
+display:flex;
+flex-direction:column;
+gap:5px;
+}
+
+.label{
+font-size:11px;
+letter-spacing:1px;
+text-transform:uppercase;
+color:var(--text-soft);
+}
+
+.value{
+font-size:16px;
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.value i{
+color:var(--green-light);
+}
+
+
+/* DIET CARDS */
+
+.diet-column{
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.diet-card{
+background:var(--bg-card);
+padding:20px;
+border-radius:18px;
+border:1px solid var(--border-soft);
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.diet-name{
+font-size:18px;
+color:var(--green-light);
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.diet-cal{
+font-size:13px;
+color:var(--text-soft);
+margin-top:5px;
+}
+
+.diet-button{
+background:var(--green-main);
+border:none;
+color:#07231d;
+padding:10px 18px;
+border-radius:20px;
+cursor:pointer;
+font-weight:500;
+}
+
+.diet-button:hover{
+background:var(--green-light);
+}
+
+
+/* MODAL */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+align-items:center;
+justify-content:center;
+}
+
+.modal-card{
+background:var(--bg-soft);
+padding:25px;
+border-radius:20px;
+width:350px;
+}
+
+.modal-header{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+.close-modal{
+background:none;
+border:none;
+color:var(--green-light);
+font-size:22px;
+cursor:pointer;
+}
+
+.modal-reason{
+color:var(--text-soft);
+line-height:1.6;
+}
+
+</style>
 </head>
+
 <body>
+
 <div class="dashboard">
 
-    <!-- navbar -->
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-seedling"></i> NutriSync</div>
-        <div class="nav-right">
-            <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="notification-badge"></span></button>
-            <button class="icon-btn" id="logoutBtn"><i class="fa-regular fa-arrow-right-from-bracket"></i></button>
-        </div>
-    </nav>
+<nav class="navbar">
+<div class="logo"><i class="fa-solid fa-leaf"></i> NutriSync</div>
 
-    <!-- 4 metric cards: dynamic values with range-based colors / trend -->
-    <div class="cards-row" id="metricCardsRow">
-        <!-- heart rate -->
-        <div class="metric-card" id="cardHeart">
-            <div class="metric-header"><i class="fa-solid fa-heart-pulse"></i> Heart rate</div>
-            <div class="metric-value" id="heartValue">72 <span class="metric-unit">bpm</span></div>
-            <div class="trend" id="heartTrend">resting, good</div>
-        </div>
-        <!-- spo2 -->
-        <div class="metric-card" id="cardSpo2">
-            <div class="metric-header"><i class="fa-solid fa-lungs"></i> SpO₂</div>
-            <div class="metric-value" id="spo2Value">98 <span class="metric-unit">%</span></div>
-            <div class="trend" id="spo2Trend">excellent</div>
-        </div>
-        <!-- water intake -->
-        <div class="metric-card" id="cardWater">
-            <div class="metric-header"><i class="fa-solid fa-droplet"></i> Water intake</div>
-            <div class="metric-value" id="waterValue">2.1 <span class="metric-unit">L</span></div>
-            <div class="trend" id="waterTrend">good</div>
-        </div>
-        <!-- sleep hrs -->
-        <div class="metric-card" id="cardSleep">
-            <div class="metric-header"><i class="fa-solid fa-moon"></i> Sleep hrs</div>
-            <div class="metric-value" id="sleepValue">7.4 <span class="metric-unit">h</span></div>
-            <div class="trend" id="sleepTrend">good</div>
-        </div>
-    </div>
+<div class="nav-right">
+<button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+<button class="icon-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
+</div>
+</nav>
 
-    <!-- detailed user information (extensive) -->
-    <div class="profile-detailed">
-        <div class="user-avatar">
-            <div class="avatar-circle"><i class="fa-regular fa-user"></i></div>
-            <span>Alex M.</span>
-        </div>
-        <div class="info-grid">
-            <div class="info-item"><span class="label">full name</span><div class="value"><i class="fa-regular fa-user"></i> Alexandra Morgan</div></div>
-            <div class="info-item"><span class="label">age / gender</span><div class="value"><i class="fa-regular fa-calendar"></i> 32 yrs · female</div></div>
-            <div class="info-item"><span class="label">weight</span><div class="value"><i class="fa-regular fa-weight-scale"></i> 74 kg</div></div>
-            <div class="info-item"><span class="label">height</span><div class="value"><i class="fa-regular fa-ruler"></i> 178 cm</div></div>
-            <div class="info-item"><span class="label">contact</span><div class="value"><i class="fa-regular fa-envelope"></i> alex.m@nutri.com</div></div>
-            <div class="info-item"><span class="label">emergency</span><div class="value"><i class="fa-regular fa-phone"></i> +1 234 567 890</div></div>
-        </div>
-        <!-- previous diseases & goal row -->
-        <div class="extra-row">
-            <span class="extra-item"><i class="fa-regular fa-notes-medical"></i> previous: mild asthma (controlled)</span>
-            <span class="extra-item"><i class="fa-regular fa-bullseye"></i> goal: fat loss + muscle tone</span>
-            <span class="extra-item"><i class="fa-regular fa-clock"></i> member since 2023</span>
-        </div>
-    </div>
 
-    <!-- three diet cards (breakfast, lunch, dinner) -->
-    <div class="diet-column">
-        <div class="diet-card">
-            <div class="diet-info">
-                <div class="diet-name"><i class="fa-solid fa-cloud-sun"></i> Breakfast · Berry oatmeal</div>
-                <span class="diet-cal"><i class="fa-regular fa-fire"></i> 385 kcal</span>
-            </div>
-            <button class="diet-button" data-meal="breakfast"><i class="fa-regular fa-message-exclamation"></i> why this?</button>
-        </div>
-        <div class="diet-card">
-            <div class="diet-info">
-                <div class="diet-name"><i class="fa-solid fa-bowl-food"></i> Lunch · Quinoa bowl</div>
-                <span class="diet-cal"><i class="fa-regular fa-fire"></i> 520 kcal</span>
-            </div>
-            <button class="diet-button" data-meal="lunch"><i class="fa-regular fa-message-exclamation"></i> why this?</button>
-        </div>
-        <div class="diet-card">
-            <div class="diet-info">
-                <div class="diet-name"><i class="fa-solid fa-moon-stars"></i> Dinner · Salmon & greens</div>
-                <span class="diet-cal"><i class="fa-regular fa-fire"></i> 495 kcal</span>
-            </div>
-            <button class="diet-button" data-meal="dinner"><i class="fa-regular fa-message-exclamation"></i> why this?</button>
-        </div>
-    </div>
+<div class="cards-row">
 
-    <!-- tiny note to simulate input from team member (comment / function) -->
-    <div class="hidden-input-note">
-        <i class="fa-regular fa-keyboard"></i> team input simulation: <strong>updateMetrics(heart, spo2, water, sleep)</strong> – edit values below (open console to use)
-    </div>
-
-    <!-- modal popup (why diet) -->
-    <div id="dietModal" class="modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2 id="modalMealTitle">Breakfast</h2>
-                <button class="close-modal" id="closeModalBtn"><i class="fa-regular fa-xmark"></i></button>
-            </div>
-            <div class="modal-reason" id="modalReason">
-                AI suggestion based on your morning heart rate & energy needs.
-            </div>
-        </div>
-    </div>
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-heart-pulse"></i> Heart Rate</div>
+<div class="metric-value">72 <span class="metric-unit">bpm</span></div>
+<div class="trend">excellent range</div>
 </div>
 
-<script>
-    (function() {
-        // ================= RANGE-BASED COLORING TREAD ===================
-        // ranges (based on general wellness)
-        // heart rate (bpm) : excellent 66-78, good 60-65 or 79-85, caution <60 or >85
-        // SpO2 (%): excellent 97-100, good 94-96, caution <94
-        // water intake (L) : excellent 2.2-3.0, good 1.8-2.1, caution <1.8 or >3.5 (but we show caution for low)
-        // sleep (h) : excellent 7-9, good 6-6.9 or 9.1-10, caution <6 or >10
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-lungs"></i> SpO₂</div>
+<div class="metric-value">98 <span class="metric-unit">%</span></div>
+<div class="trend">excellent</div>
+</div>
 
-        function updateCardStyleAndTrend(metricName, value) {
-            const card = document.getElementById(`card${metricName}`);
-            const trendEl = document.getElementById(`${metricName.toLowerCase()}Trend`);
-            let trendText = '';
-            let cssClass = '';
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-droplet"></i> Water Intake</div>
+<div class="metric-value">2.1 <span class="metric-unit">L</span></div>
+<div class="trend">good hydration</div>
+</div>
 
-            if (metricName === 'Heart') { // heart rate
-                if (value >= 66 && value <= 78) { trendText = 'excellent range'; cssClass = 'excellent'; }
-                else if ((value >= 60 && value <= 65) || (value >= 79 && value <= 85)) { trendText = 'good / mild variation'; cssClass = 'good'; }
-                else { trendText = 'attention advised'; cssClass = 'caution'; }
-            }
-            else if (metricName === 'Spo2') {
-                if (value >= 97) { trendText = 'excellent oxygenation'; cssClass = 'excellent'; }
-                else if (value >= 94 && value <= 96) { trendText = 'acceptable'; cssClass = 'good'; }
-                else { trendText = 'below optimal'; cssClass = 'caution'; }
-            }
-            else if (metricName === 'Water') {
-                if (value >= 2.2 && value <= 3.0) { trendText = 'excellent hydration'; cssClass = 'excellent'; }
-                else if (value >= 1.8 && value < 2.2) { trendText = 'good, but could increase'; cssClass = 'good'; }
-                else if (value < 1.8) { trendText = 'low intake · caution'; cssClass = 'caution'; }
-                else { trendText = 'above average'; cssClass = 'good'; } // >3.0 (but we keep good)
-            }
-            else if (metricName === 'Sleep') {
-                if (value >= 7 && value <= 9) { trendText = 'optimal sleep'; cssClass = 'excellent'; }
-                else if ((value >= 6 && value < 7) || (value > 9 && value <= 10)) { trendText = 'fair, could improve'; cssClass = 'good'; }
-                else { trendText = 'out of range · review'; cssClass = 'caution'; }
-            }
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-moon"></i> Sleep</div>
+<div class="metric-value">7.4 <span class="metric-unit">h</span></div>
+<div class="trend">optimal sleep</div>
+</div>
 
-            // remove previous extra classes
-            card.classList.remove('excellent', 'good', 'caution');
-            if (cssClass) card.classList.add(cssClass);
-            if (trendEl) trendEl.innerText = trendText;
-        }
+</div>
 
-        // initial values
-        let currentHeart = 72, currentSpo2 = 98, currentWater = 2.1, currentSleep = 7.4;
 
-        function refreshAllMetrics() {
-            document.getElementById('heartValue').innerHTML = currentHeart + ' <span class="metric-unit">bpm</span>';
-            document.getElementById('spo2Value').innerHTML = currentSpo2 + ' <span class="metric-unit">%</span>';
-            document.getElementById('waterValue').innerHTML = currentWater + ' <span class="metric-unit">L</span>';
-            document.getElementById('sleepValue').innerHTML = currentSleep + ' <span class="metric-unit">h</span>';
+<div class="user-data">
 
-            updateCardStyleAndTrend('Heart', currentHeart);
-            updateCardStyleAndTrend('Spo2', currentSpo2);
-            updateCardStyleAndTrend('Water', currentWater);
-            updateCardStyleAndTrend('Sleep', currentSleep);
-        }
+<div class="data-item">
+<span class="label">Full Name</span>
+<div class="value"><i class="fa-user"></i> Alexandra Morgan</div>
+</div>
 
-        // make function globally available (for team member via console)
-        window.updateMetrics = function(heart, spo2, water, sleep) {
-            if (heart !== undefined) currentHeart = heart;
-            if (spo2 !== undefined) currentSpo2 = spo2;
-            if (water !== undefined) currentWater = water;
-            if (sleep !== undefined) currentSleep = sleep;
-            refreshAllMetrics();
-            console.log(`metrics updated via updateMetrics(${heart}, ${spo2}, ${water}, ${sleep})`);
-        };
+<div class="data-item">
+<span class="label">Age</span>
+<div class="value"><i class="fa-calendar"></i> 32</div>
+</div>
 
-        // initial call
-        refreshAllMetrics();
+<div class="data-item">
+<span class="label">Gender</span>
+<div class="value"><i class="fa-venus"></i> Female</div>
+</div>
 
-        // ========== modal logic for diet ==========
-        const modal = document.getElementById('dietModal');
-        const modalTitle = document.getElementById('modalMealTitle');
-        const modalReason = document.getElementById('modalReason');
-        const closeBtn = document.getElementById('closeModalBtn');
+<div class="data-item">
+<span class="label">Weight</span>
+<div class="value"><i class="fa-weight-scale"></i> 74 kg</div>
+</div>
 
-        const whyMessages = {
-            breakfast: { title: 'Breakfast · Berry oatmeal', reason: 'Rich in antioxidants and slow carbs. Based on your morning heart rate (good range) and asthma history, anti-inflammatory berries help. Supports fat loss goal.' },
-            lunch: { title: 'Lunch · Quinoa bowl', reason: 'High plant protein & magnesium for SpO₂ transport. Your hydration level is good, quinoa provides steady energy without spikes. Suitable for muscle tone.' },
-            dinner: { title: 'Dinner · Salmon & greens', reason: 'Omega‑3 for heart rate variability and sleep quality (you currently sleep 7.4h). Greens supply iron, important due to mild asthma history.' }
-        };
+<div class="data-item">
+<span class="label">Height</span>
+<div class="value"><i class="fa-ruler"></i> 178 cm</div>
+</div>
 
-        document.querySelectorAll('.diet-button').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const meal = btn.dataset.meal;
-                if (meal && whyMessages[meal]) {
-                    modalTitle.innerText = whyMessages[meal].title;
-                    modalReason.innerText = whyMessages[meal].reason;
-                } else {
-                    modalTitle.innerText = 'Meal suggestion';
-                    modalReason.innerText = 'Personalized by AI based on your latest metrics.';
-                }
-                modal.style.display = 'flex';
-            });
-        });
+<div class="data-item">
+<span class="label">BMI</span>
+<div class="value"><i class="fa-calculator"></i> 23.4</div>
+</div>
 
-        const closeModal = () => modal.style.display = 'none';
-        closeBtn.addEventListener('click', closeModal);
-        window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+<div class="data-item">
+<span class="label">Disease History</span>
+<div class="value"><i class="fa-notes-medical"></i> Mild Asthma</div>
+</div>
 
-        // notification and logout (simple)
-        document.getElementById('notifBtn').addEventListener('click', ()=> alert('🔔 New insights: sleep cycle analysis available.'));
-        document.getElementById('logoutBtn').addEventListener('click', ()=> { if(confirm('Logout demo?')) alert('Signed out.'); });
+<div class="data-item">
+<span class="label">Health Goal</span>
+<div class="value"><i class="fa-bullseye"></i> Fat Loss</div>
+</div>
 
-        // Additional comment: example for team member — they can type in console: updateMetrics(70, 95, 2.5, 6.8)
-        console.log('✅ NutriSync dashboard ready. Use updateMetrics(heart, spo2, water, sleep) to test ranges.');
-    })();
-</script>
+</div>
 
-<!-- small style for metric card dynamic left border already used -->
+
+<div class="diet-column">
+
+<div class="diet-card">
+<div>
+<div class="diet-name"><i class="fa-cloud-sun"></i> Breakfast</div>
+<div class="diet-cal">Berry Oatmeal • 385 kcal</div>
+</div>
+
+<button class="diet-button">why this?</button>
+</div>
+
+<div class="diet-card">
+<div>
+<div class="diet-name"><i class="fa-bowl-food"></i> Lunch</div>
+<div class="diet-cal">Quinoa Bowl • 520 kcal</div>
+</div>
+
+<button class="diet-button">why this?</button>
+</div>
+
+<div class="diet-card">
+<div>
+<div class="diet-name"><i class="fa-moon"></i> Dinner</div>
+<div class="diet-cal">Salmon & Greens • 495 kcal</div>
+</div>
+
+<button class="diet-button">why this?</button>
+</div>
+
+</div>
+
+</div>
+
 </body>
 </html>
