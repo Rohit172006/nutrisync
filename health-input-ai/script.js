@@ -1,66 +1,75 @@
+const BASE_URL = "http://localhost:5000";
 
-function showManual(){
-document.getElementById("manualForm").style.display="block";
-document.getElementById("wearable").style.display="none";
+// Toggle Tabs
+function showManual() {
+    document.getElementById("manualForm").style.display = "block";
+    document.getElementById("wearable").style.display = "none";
 }
 
-function showWearable(){
-document.getElementById("manualForm").style.display="none";
-document.getElementById("wearable").style.display="block";
+function showWearable() {
+    document.getElementById("manualForm").style.display = "none";
+    document.getElementById("wearable").style.display = "block";
 }
 
-function submitVitals(){
+// Manual Submit
+async function submitVitals() {
 
-let hr=document.getElementById("hr").value
-let sleep=document.getElementById("sleep").value
-let activity=document.getElementById("activity").value
-let spo2=document.getElementById("spo2").value
+    const resting_hr = parseInt(document.getElementById("hr").value);
+    const sleep_hours = parseFloat(document.getElementById("sleep").value);
+    const activity_minutes = parseInt(document.getElementById("activity").value);
+    const spo2 = parseInt(document.getElementById("spo2").value);
 
-let valid=true
+    try {
+        const response = await fetch(`${BASE_URL}/api/vitals/manual`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                resting_hr,
+                sleep_hours,
+                activity_minutes,
+                spo2
+            })
+        });
 
-// Clear old errors
-document.getElementById("hrError").innerText=""
-document.getElementById("sleepError").innerText=""
-document.getElementById("activityError").innerText=""
-document.getElementById("spo2Error").innerText=""
+        const data = await response.json();
 
-// Heart Rate Validation
-if(hr<40 || hr>120){
-document.getElementById("hrError").innerText="Heart rate must be between 40 - 120"
-valid=false
+        console.log("Response:", data);
+
+        alert(`
+Stress Level: ${data.stress_prediction.stress_level}
+Calories Target: ${data.nutrition_plan.calorieTarget}
+Explanation: ${data.explanation}
+        `);
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to connect to server");
+    }
 }
 
-// Sleep Validation
-if(sleep<0 || sleep>12){
-document.getElementById("sleepError").innerText="Sleep must be between 0 - 12 hours"
-valid=false
-}
+// Wearable Sync
+document.querySelector(".sync-btn").addEventListener("click", async () => {
 
-// Activity Validation
-if(activity<0 || activity>180){
-document.getElementById("activityError").innerText="Activity must be between 0 - 180 minutes"
-valid=false
-}
+    try {
+        const response = await fetch(`${BASE_URL}/api/vitals/wearable-sync`, {
+            method: "POST"
+        });
 
-// SpO2 Validation
-if(spo2<90 || spo2>100){
-document.getElementById("spo2Error").innerText="SpO2 must be between 90 - 100"
-valid=false
-}
+        const data = await response.json();
 
-if(!valid){
-return
-}
+        console.log("Wearable Data:", data);
 
-let vitalsData={
-heart_rate:hr,
-sleep_hours:sleep,
-activity_minutes:activity,
-spo2:spo2
-}
+        alert(`
+Wearable Synced!
+Stress Level: ${data.stress_prediction.stress_level}
+Calories Target: ${data.nutrition_plan.calorieTarget}
+        `);
 
-console.log(vitalsData)
+    } catch (error) {
+        console.error(error);
+        alert("Wearable sync failed");
+    }
 
-alert("Vitals Submitted Successfully")
-
-}
+});
