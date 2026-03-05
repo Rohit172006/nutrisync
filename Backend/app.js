@@ -5,13 +5,22 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/food", foodRoutes);
 
-// Import routes
+// Import routes (ALL imports first)
 const vitalsRoutes = require("./routes/vitals.routes");
 const wearableRoutes = require("./routes/wearable.routes");
 const stressTrendRoutes = require("./routes/stress-trend.route");
+const nutritionRoutes = require("./routes/nutrition.routes");  // Import this
+const foodRoutes = require("./routes/food.routes");
 
 const { generateLLMExplanation } = require("./services/llm.service");
+
+// Use routes (AFTER all imports)
+app.use("/api/vitals", vitalsRoutes);
+app.use("/api/wearable", wearableRoutes);
+app.use("/api/stress", stressTrendRoutes);
+app.use("/api/nutrition", nutritionRoutes);  // Now this works
 
 app.get("/test-llm", async (req, res) => {
     const fakeUser = {
@@ -36,12 +45,5 @@ app.get("/test-llm", async (req, res) => {
     );
     res.json({ explanation });
 });
-
-
-
-// Use routes
-app.use("/api/vitals", vitalsRoutes);
-app.use("/api/wearable", wearableRoutes);
-app.use("/api/stress", stressTrendRoutes);
 
 module.exports = app;
