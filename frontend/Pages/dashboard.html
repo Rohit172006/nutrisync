@@ -3,394 +3,713 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NutriSync Dashboard</title>
+<title>NutriSync Dashboard – dynamic alerts</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
+/* ---------- your exact CSS (untouched) ---------- */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-    *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    }
+:root{
+--bg-main:#f6fdf7;
+--bg-soft:#ffffff;
+--bg-card:#ffffff;
+--green-main:#4CAF50;
+--green-light:#66bb6a;
+--green-soft:#43a047;
+--text-main:#2e2e2e;
+--text-soft:#6b6b6b;
+--border-soft:#e5e5e5;
+}
 
-    :root{
+body{
+font-family:'Inter',sans-serif;
+background:linear-gradient(135deg, #4CAF50, #A5D6A7);
+min-height:100vh;
+display:flex;
+justify-content:center;
+padding:30px;
+color:var(--text-main);
+}
 
-    --bg-main:#0f2f28;
-    --bg-soft:#163f35;
-    --bg-card:#1e4f43;
+.dashboard{
+width:90%;
+max-width:1300px;
+display:flex;
+flex-direction:column;
+gap:25px;
+}
 
-    --green-main:#2bbf90;
-    --green-light:#45d3a3;
-    --green-soft:#2a6d5a;
+/* NAVBAR */
+.navbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:white;
+padding:15px 30px;
+border-radius:40px;
+border:1px solid var(--border-soft);
+box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
 
-    --text-main:#d9f7ee;
-    --text-soft:#9dd6c5;
+.logo{
+font-size:22px;
+font-weight:600;
+color:var(--green-main);
+}
 
-    --border-soft:#2e6b5c;
+.logo i{
+margin-right:8px;
+}
 
-    --warning:#e0b24c;
-    --danger:#e07a7a;
+.nav-menu{
+display:flex;
+gap:25px;
+align-items:center;
+}
 
-    }
+.nav-menu a{
+text-decoration:none;
+color:var(--text-main);
+font-size:15px;
+font-weight:500;
+transition:0.2s;
+}
 
-    body{
-    font-family:'Inter',sans-serif;
-    background:linear-gradient(140deg,#0f2f28,#18473c,#0f2f28);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    padding:30px;
-    color:var(--text-main);
-    }
+.nav-menu a:hover{
+color:var(--green-main);
+}
 
-    .dashboard{
-    width:90%;
-    max-width:1300px;
-    display:flex;
-    flex-direction:column;
-    gap:25px;
-    }
+.nav-right{
+display:flex;
+gap:15px;
+}
 
+.icon-btn{
+background:#f5f5f5;
+border:none;
+color:var(--green-main);
+font-size:18px;
+width:42px;
+height:42px;
+border-radius:50%;
+cursor:pointer;
+}
 
-    /* NAVBAR */
+.icon-btn:hover{
+background:#e8f5e9;
+}
 
-    .navbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:var(--bg-soft);
-    padding:15px 30px;
-    border-radius:40px;
-    border:1px solid var(--border-soft);
-    }
+/* METRIC CARDS */
+.cards-row{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
 
-    .logo{
-    font-size:24px;
-    font-weight:600;
-    color:var(--green-light);
-    }
+.metric-card{
+padding:20px;
+border-radius:18px;
+border:1px solid var(--border-soft);
+box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
 
-    .logo i{
-    margin-right:8px;
-    }
+.heart-rate{ background-color: rgb(249, 109, 109); }
+.spotwo{ background-color: rgb(93, 234, 93); }
+.water-intake{ background-color: rgb(130, 190, 216); }
+.sleep-intake{ background-color: rgb(228, 168, 178); }
 
-    .nav-right{
-    display:flex;
-    gap:15px;
-    }
+.metric-header{
+display:flex;
+align-items:center;
+gap:10px;
+color:var(--black);
+margin-bottom:10px;
+font-weight:500;
+}
 
-    .icon-btn{
-    background:var(--bg-card);
-    border:none;
-    color:var(--green-light);
-    font-size:18px;
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    cursor:pointer;
-    }
+.metric-header i{
+font-size:18px;
+background:#e8f5e9;
+padding:10px;
+border-radius:10px;
+}
 
-    .icon-btn:hover{
-    background:var(--green-soft);
-    }
+.metric-value{
+font-size:28px;
+font-weight:600;
+}
 
+.metric-unit{
+font-size:14px;
+color:var(--black);
+}
 
-    /* METRIC CARDS */
+.trend{
+font-size:13px;
+margin-top:5px;
+color:var(--black);
+}
 
-    .cards-row{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-    }
+/* USER DATA */
+.user-data{
+display:gr;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
+background:white;
+padding:25px;
+border-radius:18px;
+border:1px solid var(--border-soft);
+box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
 
-    .metric-card{
-    background:var(--bg-card);
-    padding:20px;
-    border-radius:20px;
-    border:1px solid var(--border-soft);
-    }
+.data-item{
+display:flex;
+flex-direction:column;
+gap:5px;
+}
 
-    .metric-header{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    color:var(--green-light);
-    margin-bottom:10px;
-    }
+.label{
+font-size:11px;
+letter-spacing:1px;
+text-transform:uppercase;
+color:var(--text-soft);
+}
 
-    .metric-header i{
-    font-size:20px;
-    background:var(--bg-soft);
-    padding:10px;
-    border-radius:10px;
-    }
+.value{
+font-size:15px;
+display:flex;
+align-items:center;
+gap:8px;
+}
 
-    .metric-value{
-    font-size:30px;
-    font-weight:600;
-    }
+.value i{
+color:var(--green-main);
+}
 
-    .metric-unit{
-    font-size:14px;
-    color:var(--text-soft);
-    }
+/* DIET CARDS */
+.diet-column{
+display:flex;
+flex-direction:column;
+gap:15px;
+}
 
-    .trend{
-    font-size:13px;
-    margin-top:5px;
-    color:var(--text-soft);
-    }
+.diet-card{
+background:white;
+padding:20px;
+border-radius:18px;
+border:1px solid var(--border-soft);
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 6px 18px rgba(0,0,0,0.05);
+}
 
+.diet-name{
+font-size:15px;
+color:var(--green-main);
+display:flex;
+align-items:center;
+gap:8px;
+font-weight:500;
+}
 
-    /* USER DATA */
+.diet-cal{
+font-size:16px;
+color:var(--text-soft);
+margin-top:6px;
+font-weight:500;
+}
 
-    .user-data{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:25px;
-    background:var(--bg-card);
-    padding:25px;
-    border-radius:20px;
-    border:1px solid var(--border-soft);
-    }
+.diet-button{
+background:var(--green-main);
+border:none;
+color:white;
+padding:8px 16px;
+border-radius:18px;
+cursor:pointer;
+font-weight:500;
+font-size:13px;
+}
 
-    .data-item{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-    }
+.diet-button:hover{
+background:var(--green-soft);
+}
 
-    .label{
-    font-size:11px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--text-soft);
-    }
+/* HEALTH SECTION */
+.health-section{
+background:white;
+padding:25px;
+border-radius:18px;
+border:1px solid var(--border-soft);
+box-shadow:0 6px 18px rgba(0,0,0,0.05);
+display:flex;
+flex-direction:column;
+gap:20px;
+}
 
-    .value{
-    font-size:16px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    }
+.health-title{
+font-size:22px;
+font-weight:600;
+}
 
-    .value i{
-    color:var(--green-light);
-    }
+.health-subtitle{
+color:var(--text-soft);
+font-size:14px;
+}
 
+/* HEALTH METRICS (unused, but kept) */
+.health-metrics{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
 
-    /* DIET CARDS */
+.health-box{
+background:#f8faf8;
+padding:15px;
+border-radius:12px;
+border:1px solid var(--border-soft);
+}
 
-    .diet-column{
-    display:flex;
-    flex-direction:column;
-    gap:15px;
-    }
+.health-box span{
+font-size:12px;
+color:var(--text-soft);
+}
 
-    .diet-card{
-    background:var(--bg-card);
-    padding:20px;
-    border-radius:18px;
-    border:1px solid var(--border-soft);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    }
+.health-box h3{
+font-size:20px;
+margin-top:5px;
+}
 
-    .diet-name{
-    font-size:18px;
-    color:var(--green-light);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    }
+.health-box p{
+font-size:12px;
+color:var(--green-main);
+}
 
-    .diet-cal{
-    font-size:13px;
-    color:var(--text-soft);
-    margin-top:5px;
-    }
+.alert-title{
+font-size:16px;
+margin-top:10px;
+}
 
-    .diet-button{
-    background:var(--green-main);
-    border:none;
-    color:#07231d;
-    padding:10px 18px;
-    border-radius:20px;
-    cursor:pointer;
-    font-weight:500;
-    }
+.alert-text{
+font-size:14px;
+color:var(--text-soft);
+}
 
-    .diet-button:hover{
-    background:var(--green-light);
-    }
+.update-btn{
+background:#f5f5f5;
+border:none;
+padding:10px 18px;
+border-radius:20px;
+cursor:pointer;
+font-weight:500;
+width:160px;
+}
 
+/* FORM */
+.health-form{
+margin-top:10px;
+}
 
-    /* MODAL */
+.form-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
 
-    .modal{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.5);
-    align-items:center;
-    justify-content:center;
-    }
+.form-group{
+display:flex;
+flex-direction:column;
+gap:5px;
+}
 
-    .modal-card{
-    background:var(--bg-soft);
-    padding:25px;
-    border-radius:20px;
-    width:350px;
-    }
+.form-group label{
+font-size:13px;
+color:var(--text-soft);
+}
 
-    .modal-header{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:10px;
-    }
+.form-group input{
+padding:10px;
+border-radius:8px;
+border:1px solid var(--border-soft);
+outline:none;
+}
 
-    .close-modal{
-    background:none;
-    border:none;
-    color:var(--green-light);
-    font-size:22px;
-    cursor:pointer;
-    }
+.generate-btn{
+margin-top:15px;
+background:var(--green-main);
+border:none;
+color:white;
+padding:12px;
+border-radius:20px;
+cursor:pointer;
+font-weight:500;
+width:220px;
+}
 
-    .modal-reason{
-    color:var(--text-soft);
-    line-height:1.6;
-    }
+.generate-btn:hover{
+background:var(--green-soft);
+}
 
+.alert-container{
+display:grid;
+grid-template-columns: repeat(2, 1fr);
+gap:20px;
+}
+
+/* alert card */
+.alert-card{
+background:#ffffff;
+border-radius:10px;
+padding:20px;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
+border-left:6px solid;
+}
+
+.alert-icon{
+font-size:28px;
+margin-bottom:10px;
+}
+
+.alert-title{
+font-size:18px;
+font-weight:bold;
+margin-bottom:8px;
+}
+
+.alert-desc{
+font-size:14px;
+color:#555;
+}
+
+/* warning colors */
+.water{
+border-color:#3498db;
+display: flex;
+align-items: center;
+justify-content: space-evenly;
+}
+.cardiac{
+border-color:#e74c3c;
+display: flex;
+align-items: center;
+justify-content: space-evenly;
+}
+.oxygen{
+border-color:#f39c12;
+display: flex;
+align-items: center;
+justify-content: space-evenly;
+}
+.sleep{
+border-color:#9b59b6;
+display: flex;
+align-items: center;
+justify-content: space-evenly;
+}
+.alert-title-desc{
+margin: 10px;
+}
 </style>
 </head>
-
 <body>
 
 <div class="dashboard">
 
 <nav class="navbar">
 <div class="logo"><i class="fa-solid fa-leaf"></i> NutriSync</div>
-
+<div class="nav-menu">
+<a href="#">Home</a>
+<a href="#">Dashboard</a>
+<a href="#">Input Health</a>
+</div>
 <div class="nav-right">
 <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
 <button class="icon-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
 </div>
 </nav>
 
-
+<!-- metric cards (values will be updated) -->
 <div class="cards-row">
-
-<div class="metric-card">
+<div class="metric-card heart-rate" id="metricHeart">
 <div class="metric-header"><i class="fa-solid fa-heart-pulse"></i> Heart Rate</div>
-<div class="metric-value">72 <span class="metric-unit">bpm</span></div>
-<div class="trend">excellent range</div>
+<div class="metric-value" id="heartValue">72 <span class="metric-unit">bpm</span></div>
+<div class="trend" id="heartTrend">excellent range</div>
 </div>
 
-<div class="metric-card">
+<div class="metric-card spotwo" id="metricOxy">
 <div class="metric-header"><i class="fa-solid fa-lungs"></i> SpO₂</div>
-<div class="metric-value">98 <span class="metric-unit">%</span></div>
-<div class="trend">excellent</div>
+<div class="metric-value" id="oxyValue">98 <span class="metric-unit">%</span></div>
+<div class="trend" id="oxyTrend">excellent</div>
 </div>
 
-<div class="metric-card">
+<div class="metric-card water-intake" id="metricWater">
 <div class="metric-header"><i class="fa-solid fa-droplet"></i> Water Intake</div>
-<div class="metric-value">2.1 <span class="metric-unit">L</span></div>
-<div class="trend">good hydration</div>
+<div class="metric-value" id="waterValue">2.1 <span class="metric-unit">L</span></div>
+<div class="trend" id="waterTrend">good hydration</div>
 </div>
 
-<div class="metric-card">
+<div class="metric-card sleep-intake" id="metricSleep">
 <div class="metric-header"><i class="fa-solid fa-moon"></i> Sleep</div>
-<div class="metric-value">7.4 <span class="metric-unit">h</span></div>
-<div class="trend">optimal sleep</div>
+<div class="metric-value" id="sleepValue">7.4 <span class="metric-unit">h</span></div>
+<div class="trend" id="sleepTrend">optimal sleep</div>
+</div>
 </div>
 
-</div>
-
-
+<!-- main section with alerts + form (your structure, but we will inject dynamic descriptions) -->
 <div class="user-data">
+  <div class="health-section">
+    <h2 class="health-title">Good Evening, Rohit! 👋</h2>
+    <p class="health-subtitle">Here's your personalized nutrition overview for today.</p>
 
-<div class="data-item">
-<span class="label">Full Name</span>
-<div class="value"><i class="fa-user"></i> Alexandra Morgan</div>
+    <h3 class="alert-title">Health Alerts</h3>
+    <div class="alert-container" id="alertContainer">
+      <!-- Water Alert -->
+      <div class="alert-card water" id="alertWater">
+        <div class="alert-icon"><i class="fas fa-tint"></i></div>
+        <div class="alert-title-desc">
+          <div class="alert-title" id="waterAlertTitle">Low Water Intake</div>
+          <div class="alert-desc" id="waterAlertDesc">Your water intake today is lower than recommended. Drink more water to stay hydrated.</div>
+        </div>
+      </div>
+      <!-- Cardiac -->
+      <div class="alert-card cardiac" id="alertHeart">
+        <div class="alert-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="alert-title-desc">
+          <div class="alert-title" id="heartAlertTitle">Low Cardiac Cycle</div>
+          <div class="alert-desc" id="heartAlertDesc">Your heart activity is lower than the normal range. Consider light exercise or movement.</div>
+        </div>
+      </div>
+      <!-- Oxygen -->
+      <div class="alert-card oxygen" id="alertOxy">
+        <div class="alert-icon"><i class="fas fa-lungs"></i></div>
+        <div class="alert-title-desc">
+          <div class="alert-title" id="oxyAlertTitle">Low Oxygen Level</div>
+          <div class="alert-desc" id="oxyAlertDesc">Your oxygen level is below optimal level. Take deep breaths and ensure proper ventilation.</div>
+        </div>
+      </div>
+      <!-- Sleep -->
+      <div class="alert-card sleep" id="alertSleep">
+        <div class="alert-icon"><i class="fas fa-bed"></i></div>
+        <div class="alert-title-desc">
+          <div class="alert-title" id="sleepAlertTitle">Low Sleep Hours</div>
+          <div class="alert-desc" id="sleepAlertDesc">You slept fewer hours than recommended. Proper rest is important for health.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- form for updating values -->
+    <div class="health-form">
+      <h3>Update Health Data</h3>
+      <div class="form-grid" id="inputFormGrid">
+        <div class="form-group">
+          <label>Heart Rate (bpm)</label>
+          <input type="number" id="inputHeart" value="72">
+        </div>
+        <div class="form-group">
+          <label>SpO2 (%)</label>
+          <input type="number" id="InputOxy" value="98">
+        </div>
+        <div class="form-group">
+          <label>Sleep (hours)</label>
+          <input type="number" id="inputSleep" value="7.4" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Steps</label>
+          <input type="number" id="inputSteps" value="8000">
+        </div>
+        <div class="form-group">
+          <label>Water (glasses)</label>
+          <input type="number" id="inputWaterGlasses" value="8"> <!-- 1 glass ~0.25L => 2.1L default = 8.4 glasses, we approximate -->
+        </div>
+        <div class="form-group">
+          <label>Weight (kg)</label>
+          <input type="number" id="inputWeight" value="70">
+        </div>
+      </div>
+      <button class="generate-btn" id="updateMealsBtn">Update & Generate Meals</button>
+    </div>
+  </div>
 </div>
 
-<div class="data-item">
-<span class="label">Age</span>
-<div class="value"><i class="fa-calendar"></i> 32</div>
-</div>
-
-<div class="data-item">
-<span class="label">Gender</span>
-<div class="value"><i class="fa-venus"></i> Female</div>
-</div>
-
-<div class="data-item">
-<span class="label">Weight</span>
-<div class="value"><i class="fa-weight-scale"></i> 74 kg</div>
-</div>
-
-<div class="data-item">
-<span class="label">Height</span>
-<div class="value"><i class="fa-ruler"></i> 178 cm</div>
-</div>
-
-<div class="data-item">
-<span class="label">BMI</span>
-<div class="value"><i class="fa-calculator"></i> 23.4</div>
-</div>
-
-<div class="data-item">
-<span class="label">Disease History</span>
-<div class="value"><i class="fa-notes-medical"></i> Mild Asthma</div>
-</div>
-
-<div class="data-item">
-<span class="label">Health Goal</span>
-<div class="value"><i class="fa-bullseye"></i> Fat Loss</div>
-</div>
-
-</div>
-
-
+<!-- diet cards (unchanged) -->
 <div class="diet-column">
-
-<div class="diet-card">
-<div>
-<div class="diet-name"><i class="fa-cloud-sun"></i> Breakfast</div>
-<div class="diet-cal">Berry Oatmeal • 385 kcal</div>
+  <div class="diet-card">
+    <div>
+      <div class="diet-name"><i class="fa-solid fa-cloud-sun"></i> Breakfast</div>
+      <div class="diet-cal">Berry Oatmeal • 385 kcal</div>
+    </div>
+    <button class="diet-button">why this?</button>
+  </div>
+  <div class="diet-card">
+    <div>
+      <div class="diet-name"><i class="fa-solid fa-bowl-food"></i> Lunch</div>
+      <div class="diet-cal">Quinoa Bowl • 520 kcal</div>
+    </div>
+    <button class="diet-button">why this?</button>
+  </div>
+  <div class="diet-card">
+    <div>
+      <div class="diet-name"><i class="fa-solid fa-moon"></i> Dinner</div>
+      <div class="diet-cal">Salmon & Greens • 495 kcal</div>
+    </div>
+    <button class="diet-button">why this?</button>
+  </div>
 </div>
 
-<button class="diet-button">why this?</button>
-</div>
+</div> <!-- close dashboard -->
 
-<div class="diet-card">
-<div>
-<div class="diet-name"><i class="fa-bowl-food"></i> Lunch</div>
-<div class="diet-cal">Quinoa Bowl • 520 kcal</div>
-</div>
+<script>
+(function() {
+  // ----- helper to update metrics and alerts -----
+  function updateDashboard() {
+    // 1. read values from input fields
+    const heartRate = parseFloat(document.getElementById('inputHeart').value);
+    const spo2 = parseFloat(document.getElementById('InputOxy').value);
+    const sleepHours = parseFloat(document.getElementById('inputSleep').value);
+    const waterGlasses = parseFloat(document.getElementById('inputWaterGlasses').value);
 
-<button class="diet-button">why this?</button>
-</div>
+    // ----- update metric cards (showing appropriate units) -----
+    // Heart
+    const heartValueSpan = document.getElementById('heartValue');
+    heartValueSpan.innerHTML = (isNaN(heartRate) ? '72' : heartRate) + ' <span class="metric-unit">bpm</span>';
+    
+    // SpO2
+    const oxyValueSpan = document.getElementById('oxyValue');
+    oxyValueSpan.innerHTML = (isNaN(spo2) ? '98' : spo2) + ' <span class="metric-unit">%</span>';
 
-<div class="diet-card">
-<div>
-<div class="diet-name"><i class="fa-moon"></i> Dinner</div>
-<div class="diet-cal">Salmon & Greens • 495 kcal</div>
-</div>
+    // Water (convert glasses to litres: assume 1 glass = 0.25 L)
+    let waterLitres = isNaN(waterGlasses) ? 2.1 : waterGlasses * 0.25;
+    const waterValueSpan = document.getElementById('waterValue');
+    waterValueSpan.innerHTML = waterLitres.toFixed(1) + ' <span class="metric-unit">L</span>';
 
-<button class="diet-button">why this?</button>
-</div>
-</div>
-</div>
+    // Sleep
+    const sleepValueSpan = document.getElementById('sleepValue');
+    sleepValueSpan.innerHTML = (isNaN(sleepHours) ? '7.4' : sleepHours.toFixed(1)) + ' <span class="metric-unit">h</span>';
 
+    // ----- trend texts based on updated values -----
+    const heartTrend = document.getElementById('heartTrend');
+    const oxyTrend = document.getElementById('oxyTrend');
+    const waterTrend = document.getElementById('waterTrend');
+    const sleepTrend = document.getElementById('sleepTrend');
+
+    // ----- alert titles & descriptions -----
+    const heartAlertTitle = document.getElementById('heartAlertTitle');
+    const heartAlertDesc = document.getElementById('heartAlertDesc');
+    const oxyAlertTitle = document.getElementById('oxyAlertTitle');
+    const oxyAlertDesc = document.getElementById('oxyAlertDesc');
+    const waterAlertTitle = document.getElementById('waterAlertTitle');
+    const waterAlertDesc = document.getElementById('waterAlertDesc');
+    const sleepAlertTitle = document.getElementById('sleepAlertTitle');
+    const sleepAlertDesc = document.getElementById('sleepAlertDesc');
+
+    // 1) HEART RATE logic
+    if (!isNaN(heartRate)) {
+      if (heartRate < 65) {
+        heartTrend.innerText = 'low cardiac cycle';
+        heartAlertTitle.innerText = '⚠️ Low cardiac cycle';
+        heartAlertDesc.innerText = 'Your heart rate is below 65 bpm. Consider light exercise or movement.';
+      } else if (heartRate >= 65 && heartRate <= 79) {
+        heartTrend.innerText = 'normal & relax';
+        heartAlertTitle.innerText = '❤️ Normal heart rate';
+        heartAlertDesc.innerText = 'Heart rate is in the optimal range (65–79 bpm). Keep up the good habits.';
+      } else if (heartRate >= 80) {
+        heartTrend.innerText = 'high cardiac cycle – need rest';
+        heartAlertTitle.innerText = '💓 High cardiac cycle';
+        heartAlertDesc.innerText = 'Your heart rate is above 80 bpm. Take some rest and breathe deeply.';
+      }
+    } else {
+      // fallback
+      heartTrend.innerText = 'excellent range';
+    }
+
+    // 2) SpO2 logic
+    if (!isNaN(spo2)) {
+      if (spo2 < 90) {
+        oxyTrend.innerText = 'needs oxygen / fresh air';
+        oxyAlertTitle.innerText = '🫁 Low oxygen level';
+        oxyAlertDesc.innerText = 'SpO₂ below 90%. Go to a well‑ventilated area or consult a doctor.';
+      } else if (spo2 >= 91 && spo2 <= 99) {
+        oxyTrend.innerText = 'excellent';
+        oxyAlertTitle.innerText = '✅ Normal oxygen';
+        oxyAlertDesc.innerText = 'SpO₂ is in the healthy range (91–99%). Good job!';
+      } else if (spo2 > 99) {
+        oxyTrend.innerText = 'slightly high – exercise may help';
+        oxyAlertTitle.innerText = '💪 High oxygen saturation';
+        oxyAlertDesc.innerText = 'SpO₂ above 99% is unusual but fine. Light exercise can balance it.';
+      }
+    } else {
+      oxyTrend.innerText = 'excellent';
+    }
+
+    // 3) WATER INTAKE (based on litres, derived from glasses)
+    if (!isNaN(waterLitres)) {
+      if (waterLitres < 1.0) { // less than 4 glasses
+        waterTrend.innerText = 'needs more water';
+        waterAlertTitle.innerText = '💧 Very low water intake';
+        waterAlertDesc.innerText = 'You had less than 1L (4 glasses). Drink water regularly.';
+      } else if (waterLitres >= 1.0 && waterLitres <= 2.0) { // 4 to 8 glasses approx
+        waterTrend.innerText = 'good hydration';
+        waterAlertTitle.innerText = '🥤 Adequate water';
+        waterAlertDesc.innerText = 'Your water intake is between 1L and 2L — keep it up!';
+      } else if (waterLitres > 2.0) { // more than 8 glasses
+        waterTrend.innerText = 'well hydrated, but listen to your body';
+        waterAlertTitle.innerText = '💦 High water intake';
+        waterAlertDesc.innerText = 'You drank more than 2L. That’s fine, but don’t overdo it.';
+      }
+    } else {
+      waterTrend.innerText = 'good hydration';
+    }
+
+    // 4) SLEEP logic (hours)
+    if (!isNaN(sleepHours)) {
+      if (sleepHours < 6.5) {
+        sleepTrend.innerText = 'needs more rest';
+        sleepAlertTitle.innerText = '😴 Low sleep';
+        sleepAlertDesc.innerText = 'You slept less than 6.5h. Try to rest more for recovery.';
+      } else if (sleepHours >= 7 && sleepHours <= 9) {
+        sleepTrend.innerText = 'optimal sleep';
+        sleepAlertTitle.innerText = '🛌 Good sleep';
+        sleepAlertDesc.innerText = '7–9 hours of sleep – perfect for recovery.';
+      } else if (sleepHours > 9) {
+        sleepTrend.innerText = 'long sleep – you might need energy & exercise';
+        sleepAlertTitle.innerText = '⏰ Long sleep';
+        sleepAlertDesc.innerText = 'More than 9h could indicate fatigue. Light exercise helps.';
+      }
+    } else {
+      sleepTrend.innerText = 'optimal sleep';
+    }
+
+    // special case: spo2 exactly 90 or 100? we covered ranges; but 90 falls in <90? 90<90 is false. actually 90 not included in 91-99, so we treat <90, 91-99, >99.
+    // if spo2 = 90 it's borderline, keep <90 category for safety. we can optionally handle 90 explicitly.
+    if (spo2 === 90) {
+      oxyTrend.innerText = 'borderline – watch it';
+      oxyAlertTitle.innerText = '⚠️ Borderline SpO₂';
+      oxyAlertDesc.innerText = 'SpO₂ is exactly 90%. Take deep breaths, monitor closely.';
+    }
+  }
+
+  // attach event to button
+  document.getElementById('updateMealsBtn').addEventListener('click', function(e) {
+    e.preventDefault();   // prevent any form refresh
+    updateDashboard();
+  });
+
+  // optional: run once on page load to set alerts according to default input values (72,98,7.4,8 glasses)
+  window.addEventListener('load', function() {
+    updateDashboard();
+  });
+
+})();
+</script>
+
+<!-- ensure that water glasses reflect the shown 2.1L (~8.4 glasses). Default input is 8, giving 2.0L, close. We keep as is -->
 </body>
 </html>
