@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile</title>
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body onload="checkAuth()">
+    <div class="container">
+        <h2>Complete Your Profile</h2>
+        <p>We need a few more details to personalize your health journey.</p>
+
+        <!-- Two-column grid for form fields -->
+        <div class="form-grid">
+            <!-- Age -->
+            <div class="form-group">
+                <label for="age">Age *</label>
+                <input type="number" id="age" placeholder="e.g., 25" min="1" max="120">
+            </div>
+
+            <!-- Gender -->
+            <div class="form-group">
+                <label for="gender">Gender *</label>
+                <select id="gender">
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Weight -->
+            <div class="form-group">
+                <label for="weight">Weight (kg) *</label>
+                <input type="number" id="weight" placeholder="e.g., 70" step="0.1" min="1">
+            </div>
+
+            <!-- Height -->
+            <div class="form-group">
+                <label for="height">Height (cm) *</label>
+                <input type="number" id="height" placeholder="e.g., 170" step="0.1" min="50">
+            </div>
+
+            <!-- Fitness Goal (full width on its own row, but we'll span both columns) -->
+            <div class="form-group full-width">
+                <label for="fitness_goal">Fitness Goal *</label>
+                <select id="fitness_goal">
+                    <option value="" disabled selected>Select your goal</option>
+                    <option value="lose_weight">Lose Weight</option>
+                    <option value="gain_muscle">Gain Muscle</option>
+                    <option value="stay_fit">Stay Fit</option>
+                    <option value="increase_endurance">Increase Endurance</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Diseases (left column) -->
+            <div class="form-group">
+                <label for="diseases">Existing diseases (optional)</label>
+                <textarea id="diseases" placeholder="e.g., Diabetes, Hypertension" rows="3"></textarea>
+            </div>
+
+            <!-- Allergies (right column) -->
+            <div class="form-group">
+                <label for="allergies">Allergies (optional)</label>
+                <textarea id="allergies" placeholder="e.g., Peanuts, Dairy" rows="3"></textarea>
+            </div>
+        </div>
+
+        <button onclick="saveProfile()">Save & Continue</button>
+        <div class="skip-link">
+            <a href="pages/dashboard.html">Skip for now</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,88 +1,239 @@
 /* Reset default browser styles */
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial, Helvetica, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Full page layout */
-body{
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#667eea,#764ba2);
+/* Full page layout with subtle animated gradient */
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(-45deg, #f5f0ff, #e8e0ff, #f0eaff, #faf5ff);
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+    padding: 30px;
 }
 
-/* Login card */
-.container{
-background:#ffffff;
-padding:40px;
-width:350px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.2);
-text-align:center;
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Glass card container – wider to fit two columns */
+.container {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 50px;
+    width: 100%;
+    max-width: 950px; /* Increased width to accommodate two columns */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.container:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.55);
 }
 
 /* Title */
-.container h2{
-margin-bottom:25px;
-color:#333;
+.container h2 {
+    margin-bottom: 12px;
+    color: #2d2a3e;
+    font-weight: 600;
+    font-size: 2.2rem;
+    letter-spacing: -0.02em;
 }
 
-/* Input fields */
-input{
-width:100%;
-padding:12px;
-margin-bottom:15px;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:14px;
-transition:0.3s;
-outline:none;
+/* Subtitle / description */
+.container p {
+    color: #4a4556;
+    margin-bottom: 30px;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    opacity: 0.9;
 }
 
-/* Input focus effect */
-input:focus{
-border-color:#667eea;
-box-shadow:0 0 6px rgba(102,126,234,0.6);
+/* Form grid – two columns */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
-/* Login button */
-button{
-width:100%;
-padding:12px;
-background:#667eea;
-border:none;
-border-radius:6px;
-color:white;
-font-size:16px;
-cursor:pointer;
-transition:0.3s;
+/* Full-width element (spans both columns) */
+.form-group.full-width {
+    grid-column: span 2;
 }
 
-/* Button hover effect */
-button:hover{
-background:#5563d1;
-transform:translateY(-2px);
-box-shadow:0 6px 15px rgba(0,0,0,0.2);
+/* Form group wrapper */
+.form-group {
+    text-align: left;
+    margin-bottom: 0; /* margin handled by grid gap */
 }
 
-/* Signup text */
-p{
-margin-top:15px;
-font-size:14px;
-color:#555;
+/* Labels */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2d2a3e;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
 }
 
-/* Link styling */
-a{
-color:#667eea;
-text-decoration:none;
-font-weight:bold;
+/* Input fields, select, textarea – larger and softer */
+input, select, textarea {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    font-size: 1rem;
+    color: #1e1a2b;
+    outline: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
-a:hover{
-text-decoration:underline;
+/* Placeholder styling */
+input::placeholder, textarea::placeholder {
+    color: #7a7588;
+    font-weight: 300;
+    opacity: 0.7;
+}
+
+/* Dropdown arrow */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%234a4556' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 18px;
+}
+
+/* Option styling */
+select option {
+    background: #ffffff;
+    color: #1e1a2b;
+}
+
+/* Textarea */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Focus state */
+input:focus, select:focus, textarea:focus {
+    border-color: #b3a5d9;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 4px rgba(179, 165, 217, 0.15);
+}
+
+/* Hover effect */
+input:hover, select:hover, textarea:hover {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: #d0c4f0;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 18px 24px;
+    background: #2d2a3e;
+    border: none;
+    border-radius: 40px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 18px rgba(45, 42, 62, 0.15);
+    letter-spacing: 0.3px;
+    margin-top: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+button:hover {
+    background: #3f3a58;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(45, 42, 62, 0.2);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 12px rgba(45, 42, 62, 0.15);
+}
+
+/* Links */
+a {
+    color: #4a4556;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+a:hover {
+    color: #2d2a3e;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #2d2a3e;
+    transition: width 0.2s ease;
+}
+
+a:hover::after {
+    width: 100%;
+}
+
+/* Skip link */
+.skip-link {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.skip-link a {
+    font-weight: 400;
+    opacity: 0.7;
+    font-size: 0.95rem;
+}
+
+.skip-link a:hover {
+    opacity: 1;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 700px) {
+    .container {
+        padding: 30px;
+        max-width: 100%;
+    }
+    .form-grid {
+        grid-template-columns: 1fr; /* Stack on mobile */
+    }
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+    .container h2 {
+        font-size: 1.8rem;
+    }
 }
