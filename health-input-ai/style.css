@@ -85,3 +85,14 @@ color:white;
 border-radius:8px;
 cursor:pointer;
 }
+.error{
+color:red;
+font-size:13px;
+}
+
+input{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
