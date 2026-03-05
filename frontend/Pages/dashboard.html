@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriSync Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+    *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    }
+
+    :root{
+
+    --bg-main:#0f2f28;
+    --bg-soft:#163f35;
+    --bg-card:#1e4f43;
+
+    --green-main:#2bbf90;
+    --green-light:#45d3a3;
+    --green-soft:#2a6d5a;
+
+    --text-main:#d9f7ee;
+    --text-soft:#9dd6c5;
+
+    --border-soft:#2e6b5c;
+
+    --warning:#e0b24c;
+    --danger:#e07a7a;
+
+    }
+
+    body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(140deg,#0f2f28,#18473c,#0f2f28);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:30px;
+    color:var(--text-main);
+    }
+
+    .dashboard{
+    width:90%;
+    max-width:1300px;
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+    }
+
+
+    /* NAVBAR */
+
+    .navbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--bg-soft);
+    padding:15px 30px;
+    border-radius:40px;
+    border:1px solid var(--border-soft);
+    }
+
+    .logo{
+    font-size:24px;
+    font-weight:600;
+    color:var(--green-light);
+    }
+
+    .logo i{
+    margin-right:8px;
+    }
+
+    .nav-right{
+    display:flex;
+    gap:15px;
+    }
+
+    .icon-btn{
+    background:var(--bg-card);
+    border:none;
+    color:var(--green-light);
+    font-size:18px;
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    cursor:pointer;
+    }
+
+    .icon-btn:hover{
+    background:var(--green-soft);
+    }
+
+
+    /* METRIC CARDS */
+
+    .cards-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    }
+
+    .metric-card{
+    background:var(--bg-card);
+    padding:20px;
+    border-radius:20px;
+    border:1px solid var(--border-soft);
+    }
+
+    .metric-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--green-light);
+    margin-bottom:10px;
+    }
+
+    .metric-header i{
+    font-size:20px;
+    background:var(--bg-soft);
+    padding:10px;
+    border-radius:10px;
+    }
+
+    .metric-value{
+    font-size:30px;
+    font-weight:600;
+    }
+
+    .metric-unit{
+    font-size:14px;
+    color:var(--text-soft);
+    }
+
+    .trend{
+    font-size:13px;
+    margin-top:5px;
+    color:var(--text-soft);
+    }
+
+
+    /* USER DATA */
+
+    .user-data{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
+    background:var(--bg-card);
+    padding:25px;
+    border-radius:20px;
+    border:1px solid var(--border-soft);
+    }
+
+    .data-item{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    }
+
+    .label{
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--text-soft);
+    }
+
+    .value{
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    }
+
+    .value i{
+    color:var(--green-light);
+    }
+
+
+    /* DIET CARDS */
+
+    .diet-column{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    }
+
+    .diet-card{
+    background:var(--bg-card);
+    padding:20px;
+    border-radius:18px;
+    border:1px solid var(--border-soft);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    }
+
+    .diet-name{
+    font-size:18px;
+    color:var(--green-light);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    }
+
+    .diet-cal{
+    font-size:13px;
+    color:var(--text-soft);
+    margin-top:5px;
+    }
+
+    .diet-button{
+    background:var(--green-main);
+    border:none;
+    color:#07231d;
+    padding:10px 18px;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:500;
+    }
+
+    .diet-button:hover{
+    background:var(--green-light);
+    }
+
+
+    /* MODAL */
+
+    .modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    }
+
+    .modal-card{
+    background:var(--bg-soft);
+    padding:25px;
+    border-radius:20px;
+    width:350px;
+    }
+
+    .modal-header{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+    }
+
+    .close-modal{
+    background:none;
+    border:none;
+    color:var(--green-light);
+    font-size:22px;
+    cursor:pointer;
+    }
+
+    .modal-reason{
+    color:var(--text-soft);
+    line-height:1.6;
+    }
+
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<nav class="navbar">
+<div class="logo"><i class="fa-solid fa-leaf"></i> NutriSync</div>
+
+<div class="nav-right">
+<button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+<button class="icon-btn"><i class="fa-solid fa-right-from-bracket"></i></button>
+</div>
+</nav>
+
+
+<div class="cards-row">
+
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-heart-pulse"></i> Heart Rate</div>
+<div class="metric-value">72 <span class="metric-unit">bpm</span></div>
+<div class="trend">excellent range</div>
+</div>
+
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-lungs"></i> SpO₂</div>
+<div class="metric-value">98 <span class="metric-unit">%</span></div>
+<div class="trend">excellent</div>
+</div>
+
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-droplet"></i> Water Intake</div>
+<div class="metric-value">2.1 <span class="metric-unit">L</span></div>
+<div class="trend">good hydration</div>
+</div>
+
+<div class="metric-card">
+<div class="metric-header"><i class="fa-solid fa-moon"></i> Sleep</div>
+<div class="metric-value">7.4 <span class="metric-unit">h</span></div>
+<div class="trend">optimal sleep</div>
+</div>
+
+</div>
+
+
+<div class="user-data">
+
+<div class="data-item">
+<span class="label">Full Name</span>
+<div class="value"><i class="fa-user"></i> Alexandra Morgan</div>
+</div>
+
+<div class="data-item">
+<span class="label">Age</span>
+<div class="value"><i class="fa-calendar"></i> 32</div>
+</div>
+
+<div class="data-item">
+<span class="label">Gender</span>
+<div class="value"><i class="fa-venus"></i> Female</div>
+</div>
+
+<div class="data-item">
+<span class="label">Weight</span>
+<div class="value"><i class="fa-weight-scale"></i> 74 kg</div>
+</div>
+
+<div class="data-item">
+<span class="label">Height</span>
+<div class="value"><i class="fa-ruler"></i> 178 cm</div>
+</div>
+
+<div class="data-item">
+<span class="label">BMI</span>
+<div class="value"><i class="fa-calculator"></i> 23.4</div>
+</div>
+
+<div class="data-item">
+<span class="label">Disease History</span>
+<div class="value"><i class="fa-notes-medical"></i> Mild Asthma</div>
+</div>
+
+<div class="data-item">
+<span class="label">Health Goal</span>
+<div class="value"><i class="fa-bullseye"></i> Fat Loss</div>
+</div>
+
+</div>
+
+
+<div class="diet-column">
+
+<div class="diet-card">
+<div>
+<div class="diet-name"><i class="fa-cloud-sun"></i> Breakfast</div>
+<div class="diet-cal">Berry Oatmeal • 385 kcal</div>
+</div>
+
+<button class="diet-button">why this?</button>
+</div>
+
+<div class="diet-card">
+<div>
+<div class="diet-name"><i class="fa-bowl-food"></i> Lunch</div>
+<div class="diet-cal">Quinoa Bowl • 520 kcal</div>
+</div>
+
+<button class="diet-button">why this?</button>
+</div>
+
+<div class="diet-card">
+<div>
+<div class="diet-name"><i class="fa-moon"></i> Dinner</div>
+<div class="diet-cal">Salmon & Greens • 495 kcal</div>
+</div>
+
+<button class="diet-button">why this?</button>
+</div>
+</div>
+</div>
+
+</body>
+</html>

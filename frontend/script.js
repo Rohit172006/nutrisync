@@ -1,29 +1,60 @@
-const togglePassword = document.querySelector("#togglePassword");
-const password = document.querySelector("#password");
+const API = "http://localhost:5000";
 
-togglePassword.addEventListener("click", function () {
+function signup(){
 
-const type = password.getAttribute("type") === "password" ? "text" : "password";
-password.setAttribute("type", type);
-
-this.classList.toggle("fa-eye-slash");
-
-});
-
-
-document.getElementById("loginForm").addEventListener("submit", function(e){
-
-e.preventDefault();
-
+const name = document.getElementById("name").value;
 const email = document.getElementById("email").value;
-const pass = document.getElementById("password").value;
+const password = document.getElementById("password").value;
 
-if(email === "" || pass === "")
-{
-alert("Please fill all fields");
-return;
+fetch(API+"/signup",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name,
+email,
+password
+})
+})
+.then(res=>res.json())
+.then(data=>{
+alert(data.message);
+window.location="index.html";
+})
+
 }
 
-alert("Login Successful!");
 
-});
+
+function login(){
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+fetch(API+"/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+password
+})
+})
+.then(res=>res.json())
+.then(data=>{
+
+if(data.token){
+
+localStorage.setItem("token",data.token);
+
+window.location="pages/dashboard.html";
+
+}else{
+alert(data.message)
+}
+
+})
+
+}

@@ -1,73 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>NutriSync AI - Create Account</title>
-
+<title>Signup</title>
 <link rel="stylesheet" href="login.css">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="login-box">
-
-<div class="logo">
-<i class="fa-solid fa-leaf"></i>
 <h2>Create Account</h2>
-<p>Join NutriSync AI</p>
-</div>
 
-<form id="signupForm">
+<input type="text" id="name" placeholder="Name">
 
-<div class="input-group">
-<i class="fa-solid fa-user"></i>
-<input type="text" id="name" placeholder="Full Name" required>
-</div>
+<input type="email" id="email" placeholder="Email">
 
-<div class="input-group">
-<i class="fa-solid fa-envelope"></i>
-<input type="email" id="email" placeholder="Email Address" required>
-</div>
+<input type="password" id="password" placeholder="Password">
 
-<div class="input-group">
-<i class="fa-solid fa-lock"></i>
-<input type="password" id="password" placeholder="Password" required>
-<i class="fa-solid fa-eye toggle-password"></i>
-</div>
+<button onclick="signup()">Signup</button>
 
-<div class="input-group">
-<i class="fa-solid fa-lock"></i>
-<input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-</div>
-
-<button type="submit" class="login-btn">
-Create Account
-</button>
-
-<p class="signup-text">
-Already have an account?
-<a href="login.html">Login</a>
-</p>
-
-</form>
+<p>Already have account? <a href="index.html">Login</a></p>
 
 </div>
 
-</div>
-
-<script src="script.js"></script>
+<script src="frontend/script.js"></script>
 
 </body>
-
 </html>
