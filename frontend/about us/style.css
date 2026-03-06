@@ -5,6 +5,75 @@ body {
   color: #333;
   overflow-x: hidden;
 }
+/* NAVBAR */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 15px 30px;
+    border-radius: 40px;
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 25px;
+    left: 8%;
+    width: 80vw;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--green-main);
+}
+
+.logo i {
+    margin-right: 8px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.nav-menu button {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.nav-menu button:hover,
+.nav-menu button.active {
+    color: var(--green-main);
+    text-shadow: 0 0 1px rgba(76, 175, 80, 0.5);
+}
+
+.nav-right {
+    display: flex;
+    gap: 15px;
+}
+
+.icon-btn {
+    background: #f5f5f5;
+    border: none;
+    color: var(--green-main);
+    font-size: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    background: #e8f5e9;
+}
+
 
 /* HERO */
 .hero {

@@ -8,6 +8,30 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+<nav class="navbar">
+      <div class="logo"><i class="fa-solid fa-leaf"></i> NutriSync AI</div>
+      <div class="lang-selector" style="margin-left:auto; margin-right:20px;">
+        <select id="langSelect"
+          style="border:none; outline:none; background:transparent; font-weight:600; color:var(--green-main); cursor:pointer;">
+          <option value="en">🇬🇧 EN</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="hi">🇮🇳 HI</option>
+        </select>
+      </div>
+      <div class="nav-menu">
+        <button class="nav-btn active" data-tab="tab-dashboard"><span data-i18n="dashboard">Dashboard</span></button>
+        <button class="nav-btn" data-tab="tab-food"><span data-i18n="food_analyzer">Food Analyzer</span></button>
+        <button class="nav-btn" data-tab="tab-mood"><span data-i18n="mood_meals">Mood Meals</span></button>
+        <button class="nav-btn" data-tab="tab-fridge"><span data-i18n="fridge_ai">Fridge AI ✨</span></button>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
+        <button class="icon-btn" title="Wearable Connect"><i class="fa-solid fa-clock"></i></button>
+        <button class="icon-btn" title="Profile"><i class="fa-regular fa-user"></i></button>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" title="Menu"><i
+          class="fa-solid fa-ellipsis-vertical"></i></button>
+    </nav>
 
 <!-- HERO -->
 <section class="hero">
