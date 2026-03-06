@@ -2,33 +2,33 @@ const { Meal } = require("../models");
 
 exports.moodRecommendation = async (req, res) => {
 
-try {
+    try {
 
-const { mood } = req.body;
+        const { mood } = req.body;
 
-if (!mood) {
-return res.status(400).json({
-error: "Mood is required"
-});
-}
+        if (!mood) {
+            return res.status(400).json({
+                error: "Mood is required"
+            });
+        }
 
-const meals = await Meal.findAll({
-where: { mood_tag: mood }
-});
+        const meals = await Meal.findAll({
+            where: { tag: mood }
+        });
 
-res.json({
-mood,
-recommended_meals: meals
-});
+        res.json({
+            mood,
+            recommended_meals: meals
+        });
 
-} catch (error) {
+    } catch (error) {
 
-console.error(error);
+        console.error(error);
 
-res.status(500).json({
-error: "Mood recommendation failed"
-});
+        res.status(500).json({
+            error: "Mood recommendation failed"
+        });
 
-}
+    }
 
 };

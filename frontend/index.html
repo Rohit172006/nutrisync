@@ -1,66 +1,467 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NutriSync AI - Login</title>
-
-<link rel="stylesheet" href="login.css">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-</head> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriSync AI Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
 <body>
 
-<div class="container">
+  <!-- Global Loader -->
+  <div id="global-loader" class="loader-overlay hidden">
+    <div class="spinner"></div>
+    <p id="loader-msg">Syncing data...</p>
+  </div>
 
-<div class="login-box">
+  <!-- Modal -->
+  <div class="modal-overlay" id="explanationModal">
+    <div class="modal-content">
+      <i class="fa-solid fa-brain big-icon" id="modalIcon"></i>
+      <h3 id="modalTitle">AI Explanation</h3>
+      <p class="modal-reason" id="modalReason">Analyzing your plan...</p>
+      <button class="modal-close" id="closeModalBtn">Got it, thanks!</button>
+    </div>
+  </div>
 
-<div class="logo">
-<i class="fa-solid fa-leaf"></i>
-<h2>NutriSync AI</h2>
-<p>Your Smart Nutrition Companion</p>
-</div>
+  <!-- Profile Modal -->
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal-content" style="max-width: 500px; text-align: left;">
+      <h3 style="margin-top:0"><i class="fa-regular fa-user"
+          style="color:var(--green-main); margin-right:10px;"></i>Your Profile</h3>
+      <form id="formProfile" class="form-grid" style="grid-template-columns: 1fr 1fr; margin-top:20px;">
+        <div class="form-group"><label>Name</label><input type="text" id="profName" required></div>
+        <div class="form-group"><label>Age</label><input type="number" id="profAge"></div>
+        <div class="form-group"><label>Height (cm)</label><input type="number" id="profHeight"></div>
+        <div class="form-group"><label>Weight (kg)</label><input type="number" id="profWeight"></div>
+        <div class="form-group"><label>Baseline HR (bpm)</label><input type="number" id="profHR"></div>
+        <div class="form-group"><label>Baseline Sleep (h)</label><input type="number" id="profSleep" step="0.1"></div>
+        <div class="form-group"><label>Health Condition</label>
+          <select id="profDisease">
+            <option value="">None (Healthy)</option>
+            <option value="hypertension">Hypertension</option>
+            <option value="diabetes">Diabetes</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Primary Goal</label>
+          <select id="profGoal">
+            <option value="maintain">Maintain</option>
+            <option value="weight_loss">Weight Loss</option>
+            <option value="muscle_gain">Muscle Gain</option>
+          </select>
+        </div>
+      </form>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 25px;">
+        <button type="button" class="modal-close" id="closeProfileBtn"
+          style="width:auto; background:#999; margin-top:0;">Cancel</button>
+        <button type="submit" form="formProfile" class="modal-close" style="width:auto; margin-top:0;">Save
+          Profile</button>
+      </div>
+    </div>
+  </div>
 
-<form id="loginForm">
+  <div class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="logo"><i class="fa-solid fa-leaf"></i> NutriSync AI</div>
+      <div class="lang-selector" style="margin-left:auto; margin-right:20px;">
+        <select id="langSelect"
+          style="border:none; outline:none; background:transparent; font-weight:600; color:var(--green-main); cursor:pointer;">
+          <option value="en">🇬🇧 EN</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="hi">🇮🇳 HI</option>
+        </select>
+      </div>
+      <div class="nav-menu">
+        <button class="nav-btn active" data-tab="tab-dashboard"><span data-i18n="dashboard">Dashboard</span></button>
+        <button class="nav-btn" data-tab="tab-food"><span data-i18n="food_analyzer">Food Analyzer</span></button>
+        <button class="nav-btn" data-tab="tab-mood"><span data-i18n="mood_meals">Mood Meals</span></button>
+        <button class="nav-btn" data-tab="tab-fridge"><span data-i18n="fridge_ai">Fridge AI ✨</span></button>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
+        <button class="icon-btn" title="Wearable Connect"><i class="fa-solid fa-clock"></i></button>
+        <button class="icon-btn" title="Profile"><i class="fa-regular fa-user"></i></button>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" title="Menu"><i
+          class="fa-solid fa-ellipsis-vertical"></i></button>
+    </nav>
 
-<div class="input-group">
-<i class="fa-solid fa-envelope"></i>
-<input type="email" id="email" placeholder="Email Address" required>
-</div>
+    <!-- TAB 1: Dashboard -->
+    <div id="tab-dashboard" class="tab-content active">
+      <!-- Metric Cards -->
+      <div class="cards-row">
+        <div class="metric-card heart-rate">
+          <div class="metric-header"><i class="fa-solid fa-heart-pulse"></i> Heart Rate</div>
+          <div class="metric-value"><span id="valHeart">--</span> <span class="metric-unit">bpm</span></div>
+          <div class="trend" id="trendHeart">Awaiting Sync</div>
+        </div>
+        <div class="metric-card spotwo">
+          <div class="metric-header"><i class="fa-solid fa-lungs"></i> SpO₂</div>
+          <div class="metric-value"><span id="valOxy">--</span> <span class="metric-unit">%</span></div>
+          <div class="trend" id="trendOxy">Awaiting Sync</div>
+        </div>
+        <div class="metric-card activity-metric">
+          <div class="metric-header"><i class="fa-solid fa-person-running"></i> Activity</div>
+          <div class="metric-value"><span id="valActivity">--</span> <span class="metric-unit">min</span></div>
+          <div class="trend" id="trendActivity">Awaiting Sync</div>
+        </div>
+        <div class="metric-card sleep-intake">
+          <div class="metric-header"><i class="fa-solid fa-moon"></i> Sleep</div>
+          <div class="metric-value"><span id="valSleep">--</span> <span class="metric-unit">h</span></div>
+          <div class="trend" id="trendSleep">Awaiting Sync</div>
+        </div>
+        <div class="metric-card water-intake" style="cursor: pointer; transition: 0.2s;" id="waterCard"
+          title="Click to drink water!">
+          <div class="metric-header"><i class="fa-solid fa-glass-water"></i> Hydration</div>
+          <div class="metric-value"><span id="valWater">0</span> <span class="metric-unit">/ 8 glasses</span></div>
+          <div class="trend">Click to add +1</div>
+          <div id="waterFill"
+            style="position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: rgba(255,255,255,0.3); border-radius: 18px; transition: height 0.4s ease-out; pointer-events: none;">
+          </div>
+        </div>
+      </div>
 
-<div class="input-group">
-<i class="fa-solid fa-lock"></i>
-<input type="password" id="password" placeholder="Password" required>
-<i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
-</div>
+      <!-- Health Section & Unified Alerts -->
+      <div class="user-data">
+        <div class="health-section">
+          <h2 class="health-title"><span data-i18n="health_overview">Your Health Overview ✨</span></h2>
+          <p class="health-subtitle" data-i18n="health_subtitle">Powered by NutriSync AI Engine</p>
 
-<div class="options">
-<label>
-<input type="checkbox"> Remember me
-</label>
+          <div class="alert-container" id="stressAlerts">
+            <!-- Dynamic alerts based on ML output will go here -->
+            <div class="alert-card stress-ok">
+              <div class="alert-icon"><i class="fa-solid fa-check"></i></div>
+              <div class="alert-title-desc">
+                <div class="alert-title" style="margin:2px 0px">System Ready</div>
+                <div class="alert-desc">Sync wearable or input data to begin analysis.</div>
+              </div>
+            </div>
+          </div>
 
-<a href="#">Forgot Password?</a>
-</div>
+          <!-- Progress Chart Area -->
+          <div class="chart-container"
+            style="margin-top:20px; margin-bottom: 25px; padding: 20px; background:#fff; border-radius:18px; border:1px solid #eee; display:none;"
+            id="vitalsChartWrapper">
+            <h3 style="font-size:16px; margin-bottom:15px; color:#444;"><i class="fa-solid fa-chart-line"
+                style="color:var(--green-main)"></i> <span data-i18n="vitals_history">Vitals History (7-Day
+                Trend)</span></h3>
+            <div style="height: 120px; width:100%; position: relative;">
+              <canvas id="vitalsChart"></canvas>
+            </div>
+          </div>
 
-<button type="submit" class="login-btn">
-Login
-</button>
+          <!-- Forms for Input -->
+          <div class="health-form">
+            <h3>Update Health Data</h3>
+            <form id="formVitals">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Resting HR (bpm)</label>
+                  <input type="number" id="inputHeart" value="70" required>
+                </div>
+                <div class="form-group">
+                  <label>SpO2 (%)</label>
+                  <input type="number" id="inputOxy" value="98" required>
+                </div>
+                <div class="form-group">
+                  <label>Sleep (hours)</label>
+                  <input type="number" id="inputSleep" value="7.5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                  <label>Activity (mins)</label>
+                  <input type="number" id="inputActivity" value="45" required>
+                </div>
+              </div>
+              <div style="display:flex;">
+                <button type="button" class="generate-btn sync-btn" id="btnWearableSync">
+                  <i class="fa-solid fa-rotate"></i> <span data-i18n="sync">Auto-Sync Wearable</span>
+                </button>
+                <button type="submit" class="generate-btn">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="analyze_plan">Analyze & Generate
+                    Plan</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
 
-<p class="signup-text">
-Don't have an account?
-<a href="signup.html">Create Account</a>
-</p>
+      <!-- Diet Plan -->
+      <div class="diet-column" id="dietContainer" style="display:none;">
+        <h3 style="color:#2e7d32; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="fa-solid fa-utensils"></i> Suggested AI Diet</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="export-btn" id="btnGroceryList"
+              style="background: #1565C0; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 500;">
+              <i class="fa-solid fa-cart-shopping"></i> <span>Grocery List</span>
+            </button>
+            <button class="export-btn" id="btnExportPdf"
+              style="background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: 500;">
+              <i class="fa-solid fa-file-pdf"></i> <span data-i18n="export_plan">Export Plan</span>
+            </button>
+            <span
+              style="font-size: 14px; font-weight: normal; background: #e8f5e9; padding: 5px 15px; border-radius: 20px;">
+              Target: <b id="targetCals">2000</b> kcal
+            </span>
+          </div>
+        </h3>
 
+        <!-- Breakfast -->
+        <div class="diet-card">
+          <div class="diet-left">
+            <img src="./images/breakfast.png"
+              alt="Breakfast" class="food-img">
+            <div class="diet-info">
+              <div class="diet-name"><i class="fa-solid fa-cloud-sun"></i> <span data-i18n="breakfast">Breakfast</span>
+              </div>
+              <div class="diet-cal"><span class="food-name" id="mealBreak">--</span> <span class="calorie-part"><i
+                    class="fa-solid fa-fire-flame-curved"></i> <span id="calBreak">--</span></span></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="diet-button" onclick="viewRecipe('mealBreak')"
+              style="background:#fff3e0; color:#e65100; padding:10px 15px;" title="View Recipe"><i
+                class="fa-solid fa-fire-burner"></i></button>
+            <button class="diet-button" onclick="shuffleMeal('breakfast', 'mealBreak', 'calBreak', 0.25)"
+              style="background:#f1f8f1; color:#2e7d32; padding:10px 15px;" title="Shuffle Meal"><i
+                class="fa-solid fa-shuffle"></i></button>
+            <button class="diet-button btn-why"><i class="fa-regular fa-message"></i> <span data-i18n="why">why this
+                plan?</span></button>
+          </div>
+        </div>
+        <!-- Lunch -->
+        <div class="diet-card">
+          <div class="diet-left">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=150&q=80"
+              alt="Lunch" class="food-img">
+            <div class="diet-info">
+              <div class="diet-name"><i class="fa-solid fa-bowl-food"></i> <span data-i18n="lunch">Lunch</span></div>
+              <div class="diet-cal"><span class="food-name" id="mealLunch">--</span> <span class="calorie-part"><i
+                    class="fa-solid fa-fire-flame-curved"></i> <span id="calLunch">--</span></span></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="diet-button" onclick="viewRecipe('mealLunch')"
+              style="background:#fff3e0; color:#e65100; padding:10px 15px;" title="View Recipe"><i
+                class="fa-solid fa-fire-burner"></i></button>
+            <button class="diet-button" onclick="shuffleMeal('lunch', 'mealLunch', 'calLunch', 0.40)"
+              style="background:#f1f8f1; color:#2e7d32; padding:10px 15px;" title="Shuffle Meal"><i
+                class="fa-solid fa-shuffle"></i></button>
+            <button class="diet-button btn-why"><i class="fa-regular fa-message"></i> <span data-i18n="why">why this
+                plan?</span></button>
+          </div>
+        </div>
+        <!-- Dinner -->
+        <div class="diet-card">
+          <div class="diet-left">
+            <img src="./images/vegetarian.png"
+              alt="Dinner" class="food-img">
+            <div class="diet-info">
+              <div class="diet-name"><i class="fa-solid fa-moon"></i> <span data-i18n="dinner">Dinner</span></div>
+              <div class="diet-cal"><span class="food-name" id="mealDinner">--</span> <span class="calorie-part"><i
+                    class="fa-solid fa-fire-flame-curved"></i> <span id="calDinner">--</span></span></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="diet-button" onclick="viewRecipe('mealDinner')"
+              style="background:#fff3e0; color:#e65100; padding:10px 15px;" title="View Recipe"><i
+                class="fa-solid fa-fire-burner"></i></button>
+            <button class="diet-button" onclick="shuffleMeal('dinner', 'mealDinner', 'calDinner', 0.35)"
+              style="background:#f1f8f1; color:#2e7d32; padding:10px 15px;" title="Shuffle Meal"><i
+                class="fa-solid fa-shuffle"></i></button>
+            <button class="diet-button btn-why"><i class="fa-regular fa-message"></i> <span data-i18n="why">why this
+                plan?</span></button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END Dashboard Tab -->
 
-</form>
+    <!-- TAB 2: Food Analyzer -->
+    <div id="tab-food" class="tab-content panel">
+      <h2 class="health-title"><i class="fa-solid fa-magnifying-glass-chart"></i> Smart Food Analyzer</h2>
+      <p class="health-subtitle">Check if a specific food works well with your health profile.</p>
 
-</div>
-</div>
+      <form id="formFood" class="simple-form-group">
+        <input type="text" id="foodName" placeholder="E.g., Grilled Chicken Salad" required>
+        <button type="submit">Analyze Food</button>
+      </form>
 
-<script src="script.js"></script>
+      <div class="results-area" id="foodResults">
+        <div class="empty-msg">Waiting for food input...</div>
+      </div>
+    </div>
 
+    <!-- TAB 3: Mood Recommendations -->
+    <div id="tab-mood" class="tab-content panel">
+      <h2 class="health-title" data-i18n="mood_title"><i class="fa-solid fa-face-smile"></i> Mood-based Meals</h2>
+      <p class="health-subtitle" data-i18n="mood_sub">Get meals designed to boost or match your current vibe.</p>
+
+      <form id="formMood" class="simple-form-group">
+        <select id="moodSelect" required style="flex:1;">
+          <option value="" disabled selected>Select your current mood...</option>
+          <option value="energy">Energetic ⚡</option>
+          <option value="recovery">Stressed/Tired 😫</option>
+          <option value="high_protein">Happy & Active 😊</option>
+          <option value="anti_inflammatory">Sore/Achey 🤕</option>
+          <option value="muscle_gain">Pumped 💪</option>
+        </select>
+        <button type="submit">Get Recommendations</button>
+      </form>
+
+      <div class="results-area" id="moodResults" style="display: flex; flex-direction:column; gap:15px;">
+        <div class="empty-msg">Select a mood to see meals...</div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Fridge AI Vision Scanner -->
+    <div id="tab-fridge" class="tab-content panel" style="text-align:center;">
+      <h2 class="health-title"><i class="fa-solid fa-camera-viewfinder" style="color:var(--green-main)"></i> What's in
+        my
+        Fridge?</h2>
+      <p class="health-subtitle">Upload a photo of your fridge or ingredients to instantly get a recipe.</p>
+
+      <div class="fridge-upload-zone" id="fridgeUploadZone">
+        <input type="file" id="fridgeInput" accept="image/*" style="display:none;">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <h3>Drag & Drop or Click to Upload Image</h3>
+        <p style="color:#777; font-size:14px; margin-top:8px;">Supports JPG, PNG, WEBP (Mock Vision AI)</p>
+        <!-- Scanner animation line -->
+        <div class="scan-laser"></div>
+      </div>
+
+      <!-- Container where the uploaded image will preview -->
+      <div id="fridgeImagePreviewContainer"
+        style="display:none; position:relative; margin:20px auto; max-width:400px; border-radius:18px; overflow:hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+        <img id="fridgeImagePreview" src="" style="width:100%; display:block;" alt="Uploaded Fridge">
+        <div class="scanning-overlay">
+          <div class="scanning-laser-vertical"></div>
+          <div class="scanning-text">Analyzing Ingredients...</div>
+        </div>
+      </div>
+
+      <!-- AI Results Area -->
+      <div id="fridgeResults" style="display:none; margin-top:30px; text-align:left;">
+        <h3
+          style="color:#2e7d32; margin-bottom:15px; font-size:20px; border-bottom:1px solid #eee; padding-bottom:10px;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> AI Detected Ingredients
+        </h3>
+        <div id="ingredientChips" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+          <!-- Detected chips will populate here -->
+        </div>
+
+        <h3 style="color:#1f4f1f; margin-bottom:15px; font-size:20px;">🍳 Recommended Recipe:</h3>
+        <div class="diet-card" style="margin-top:0;">
+          <div class="diet-left">
+            <img id="fridgeRecipeImg"
+              src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=150&q=80"
+              alt="Recipe" class="food-img">
+            <div class="diet-info">
+              <div class="diet-name"><i class="fa-solid fa-star"></i> <span id="fridgeRecipeName">Avocado Egg
+                  Scramble</span></div>
+              <div class="diet-cal">
+                <span class="calorie-part" style="background:rgba(76,175,80,0.1); color:#2e7d32">
+                  <i class="fa-solid fa-fire-flame-curved" style="color:#2e7d32; padding-right:10px"></i> 450 kcal
+                  <span id="fridgeMacros">P:25g | C:10g | F:30g</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <button class="diet-button" onclick="viewRecipe('fridgeRecipeName')"
+            style="background:#fff3e0; color:#e65100; padding:10px 15px;" title="View Recipe"><i
+              class="fa-solid fa-fire-burner"></i> View Cooking Temp</button>
+        </div>
+      </div>
+    </div>
+    <!-- FOOTER -->
+    <footer class="modern-footer">
+      <div class="footer-grid">
+        <div class="footer-info">
+          <h2 class="footer-logo"><i class="fa-solid fa-leaf"></i> NutriSync AI</h2>
+          <p class="footer-desc">Your intelligent clinical nutrition orchestrator. Bringing ML-driven insights to daily
+            dietary habits for a healthier, balanced life.</p>
+        </div>
+
+        <div class="footer-links">
+          <h3>Features</h3>
+          <ul>
+            <li><a href="#" class="nav-btn-proxy"
+                onclick="document.querySelector('.nav-btn[data-tab=\'tab-dashboard\']').click(); return false;">Dashboard</a>
+            </li>
+            <li><a href="#" class="nav-btn-proxy"
+                onclick="document.querySelector('.nav-btn[data-tab=\'tab-food\']').click(); return false;">Food
+                Analyzer</a></li>
+            <li><a href="#" class="nav-btn-proxy"
+                onclick="document.querySelector('.nav-btn[data-tab=\'tab-mood\']').click(); return false;">Mood
+                Meals</a></li>
+            <li><a href="#" class="nav-btn-proxy"
+                onclick="document.querySelector('.nav-btn[data-tab=\'tab-fridge\']').click(); return false;">Fridge AI
+                Scanner</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h3>Support</h3>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-social">
+          <h3>Connect</h3>
+          <div class="social-icons">
+            <a href="#" title="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 NutriSync Labs AI. All rights reserved.</p>
+        <p class="disclaimer">NutriSync AI is meant for informational purposes and does not replace professional medical
+          advice.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Chat Widget HTML -->
+  <div class="chat-widget" id="chatWidget">
+    <div class="chat-header">
+      <span>
+        <div class="bot-avatar-header"><i class="fa-solid fa-leaf"></i></div>
+        NutriSync Coach
+      </span>
+      <div style="display:flex; gap:10px; z-index:1;">
+        <button id="toggleVoice" title="Toggle Voice (Currently ON)"><i class="fa-solid fa-volume-high"></i></button>
+        <button id="closeChat" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="chat-message-wrapper ai-wrapper">
+        <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+        <div class="msg ai">Hello! I'm your NutriSync Assistant. How can I help you today?</div>
+      </div>
+    </div>
+    <form class="chat-footer" id="chatForm">
+      <input type="text" id="chatInput" placeholder="Ask about your diet..." required autocomplete="off" />
+      <button type="submit" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+  </div>
+  <button class="chat-fab" id="openChat" title="Open AI Coach"><i class="fa-solid fa-message"></i></button>
+
+  <script src="js/app.js?v=5.0"></script>
 </body>
+
 </html>
