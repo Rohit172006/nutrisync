@@ -4,7 +4,7 @@ const Vitals = require("../models/vitals.model");
 const axios = require("axios");
 const { generateNutritionPlan } = require("../services/nutrition.service");
 const { generateLLMExplanation } = require("../services/llm.service");
- const { Recommendation } = require("../models");
+const { Recommendation } = require("../models");
 
 
 
@@ -44,30 +44,30 @@ exports.syncWearableVitals = async (req, res) => {
         );
 
         // 4️⃣ Generate nutrition plan
-        const plan = await generateNutritionPlan(user, mlResult.stress_level);
+        const plan = await generateNutritionPlan(user, mlResult.stress_level, wearableData.activity_minutes);
 
-            const explanation = await generateLLMExplanation(
-                user,
-                mlResult.stress_level,
-                plan
-            );
+        const explanation = await generateLLMExplanation(
+            user,
+            mlResult.stress_level,
+            plan
+        );
 
-            await Recommendation.create({
-                stress_level: mlResult.stress_level,
-                calorie_target: plan.calorieTarget,
-                breakfast: plan.meals.breakfast?.meal_name || null,
-                lunch: plan.meals.lunch?.meal_name || null,
-                dinner: plan.meals.dinner?.meal_name || null,
-                source: "manual",
-                UserId: userId
-            });
+        await Recommendation.create({
+            stress_level: mlResult.stress_level,
+            calorie_target: plan.calorieTarget,
+            breakfast: plan.meals.breakfast?.meal_name || null,
+            lunch: plan.meals.lunch?.meal_name || null,
+            dinner: plan.meals.dinner?.meal_name || null,
+            source: "manual",
+            UserId: userId
+        });
 
         res.json({
-                source: "manual",
-                stress_prediction: mlResult,
-                nutrition_plan: plan,
-                explanation: explanation || "Explanation service unavailable."
-            });
+            source: "manual",
+            stress_prediction: mlResult,
+            nutrition_plan: plan,
+            explanation: explanation || "Explanation service unavailable."
+        });
 
     } catch (error) {
         console.error(error);
@@ -101,31 +101,45 @@ exports.submitManualVitals = async (req, res) => {
             user.baseline_resting_hr
         );
 
-        const plan = await generateNutritionPlan(user, mlResult.stress_level);
+        const plan = await generateNutritionPlan(user, mlResult.stress_level, activity_minutes);
         const explanation = await generateLLMExplanation(
             user,
             mlResult.stress_level,
             plan
         );
-        
-         await Recommendation.create({
-                stress_level: mlResult.stress_level,
-                calorie_target: plan.calorieTarget,
-                breakfast: plan.meals.breakfast?.meal_name || null,
-                lunch: plan.meals.lunch?.meal_name || null,
-                dinner: plan.meals.dinner?.meal_name || null,
-                source: "manual",
-                UserId: userId
-         });
-        
 
-       res.json({
-                source: "manual",
-                stress_prediction: mlResult,
-                nutrition_plan: plan,
-                explanation: explanation || "Explanation service unavailable."
-            });
+        await Recommendation.create({
+            stress_level: mlResult.stress_level,
+            calorie_target: plan.calorieTarget,
+            breakfast: plan.meals.breakfast?.meal_name || null,
+            lunch: plan.meals.lunch?.meal_name || null,
+            dinner: plan.meals.dinner?.meal_name || null,
+            source: "manual",
+            UserId: userId
+        });
 
+
+        res.json({
+            source: "manual",
+            stress_prediction: mlResult,
+            nutrition_plan: plan,
+            explanation: explanation || "Explanation service unavailable."
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getVitalsHistory = async (req, res) => {
+    try {
+        const userId = 1;
+        const vitals = await Vitals.findAll({
+            where: { UserId: userId },
+            order: [["createdAt", "ASC"]],
+            limit: 7
+        });
+        res.json({ history: vitals });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

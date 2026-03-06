@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-    "abc",      // database name
+    "nutrisyncai",      // database name
     "root",           // username
     "sql123",   // password
     {

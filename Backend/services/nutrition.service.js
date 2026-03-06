@@ -2,18 +2,21 @@ const { Meal } = require("../models");
 const { calculateBMR } = require("../utils/bmrCalculator");
 const { Op } = require("sequelize");
 
-async function generateNutritionPlan(user, stressLevel) {
+async function generateNutritionPlan(user, stressLevel, activityMinutes = 0) {
 
     /* ==============================
        1️⃣ CALCULATE BASE CALORIES
     ============================== */
 
     let bmr = calculateBMR(user.weight, user.height, user.age, "male");
-    let calorieTarget = bmr;
+
+    // Add activity expenditure (approx 5-7 calories per minute of activity)
+    let activityBurn = activityMinutes * 6;
+    let calorieTarget = bmr + activityBurn;
 
     // Goal adjustment
-    if (user.goal === "fat_loss") calorieTarget -= 300;
-    if (user.goal === "muscle_gain") calorieTarget += 300;
+    if (user.goal === "fat_loss" || user.goal === "weight_loss") calorieTarget -= 400;
+    if (user.goal === "muscle_gain") calorieTarget += 400;
 
     /* ==============================
        2️⃣ DISEASE-BASED ADJUSTMENTS
@@ -30,7 +33,7 @@ async function generateNutritionPlan(user, stressLevel) {
     }
 
     if (user.disease === "obesity") {
-        calorieTarget -= 200;
+        calorieTarget -= 300;
     }
 
     /* ==============================
@@ -40,8 +43,21 @@ async function generateNutritionPlan(user, stressLevel) {
     let allergyFilter = {};
 
     if (user.allergies) {
-        const allergyList = user.allergies.split(",");
-        allergyFilter.allergen = { [Op.notIn]: allergyList };
+        const allergyList = user.allergies.split(",").map(a => a.trim().toLowerCase());
+        allergyFilter.allergen = {
+            [Op.or]: [
+                { [Op.notIn]: allergyList },
+                { [Op.is]: null }
+            ]
+        };
+    } else {
+        allergyFilter.allergen = {
+            [Op.or]: [
+                { [Op.not]: null },
+                { [Op.is]: null }
+            ] // Basically no filter, but explicitly handles it. Or just empty.
+        };
+        allergyFilter = {}; // Reset since no allergies
     }
 
     /* ==============================
@@ -51,15 +67,23 @@ async function generateNutritionPlan(user, stressLevel) {
     let requiredTag = null;
 
     if (stressLevel === "HIGH") requiredTag = "recovery";
-    if (stressLevel === "MODERATE") requiredTag = "high_protein";
+    else if (user.goal === "muscle_gain") requiredTag = "muscle_gain";
+    else if (user.goal === "weight_loss") requiredTag = "high_protein";
+    else if (stressLevel === "MODERATE") requiredTag = "anti_inflammatory";
+    else requiredTag = "energy";
 
     /* ==============================
        5️⃣ CALORIE DISTRIBUTION
     ============================== */
 
-    let breakfastTarget = calorieTarget * 0.3;
-    let lunchTarget = calorieTarget * 0.35;
-    let dinnerTarget = calorieTarget * 0.35;
+    // Randomize the meal ratios slightly so they don't look overly robotic
+    const r1 = 0.25 + (Math.random() * 0.1); // Breakfast: 25-35%
+    const r2 = 0.35 + (Math.random() * 0.1); // Lunch: 35-45%
+    const r3 = 1.0 - (r1 + r2);              // Dinner: Remaining
+
+    let breakfastTarget = calorieTarget * r1;
+    let lunchTarget = calorieTarget * r2;
+    let dinnerTarget = calorieTarget * r3;
 
     /* ==============================
        6️⃣ COMMON WHERE FILTER
@@ -76,58 +100,52 @@ async function generateNutritionPlan(user, stressLevel) {
     ============================== */
 
     const breakfastMeals = await Meal.findAll({
-        where: {
-            meal_type: "breakfast",
-            ...baseFilter
-        }
+        where: { meal_type: "breakfast", ...baseFilter }
     });
 
     const lunchMeals = await Meal.findAll({
-        where: {
-            meal_type: "lunch",
-            ...baseFilter
-        }
+        where: { meal_type: "lunch", ...baseFilter }
     });
 
     const dinnerMeals = await Meal.findAll({
-        where: {
-            meal_type: "dinner",
-            ...baseFilter
-        }
+        where: { meal_type: "dinner", ...baseFilter }
     });
 
     /* ==============================
        8️⃣ SELECT CLOSEST CALORIE MATCH
     ============================== */
 
-    function selectClosest(meals, target) {
-        if (!meals.length) return null;
+    function selectClosest(mealsArray, target) {
+        if (!mealsArray || mealsArray.length === 0) return null;
 
-        return meals.reduce((prev, curr) =>
-            Math.abs(curr.calories - target) <
-            Math.abs(prev.calories - target) ? curr : prev
-        );
+        // Find top 5 closest meals to massively increase randomization pool
+        let sorted = [...mealsArray].sort((a, b) => Math.abs(a.calories - target) - Math.abs(b.calories - target));
+
+        // Randomly pick one of the top 5 closest meals for heavy variety
+        let poolSize = Math.min(5, sorted.length);
+        let topOptions = sorted.slice(0, poolSize);
+        return topOptions[Math.floor(Math.random() * poolSize)];
     }
 
-            let selectedBreakfast = selectClosest(breakfastMeals, breakfastTarget);
-            let selectedLunch = selectClosest(lunchMeals, lunchTarget);
-            let selectedDinner = selectClosest(dinnerMeals, dinnerTarget);
+    let selectedBreakfast = selectClosest(breakfastMeals, breakfastTarget);
+    let selectedLunch = selectClosest(lunchMeals, lunchTarget);
+    let selectedDinner = selectClosest(dinnerMeals, dinnerTarget);
 
-            // Fallback if strict filtering returns null
-            if (!selectedBreakfast) {
-                const fallbackBreakfast = await Meal.findOne({ where: { meal_type: "breakfast" } });
-                selectedBreakfast = fallbackBreakfast;
-            }
+    // Fallback if strict filtering returns null (e.g. no "recovery" breakfasts)
+    if (!selectedBreakfast) {
+        const fallbacks = await Meal.findAll({ where: { meal_type: "breakfast" } });
+        selectedBreakfast = selectClosest(fallbacks, breakfastTarget);
+    }
 
-            if (!selectedLunch) {
-                const fallbackLunch = await Meal.findOne({ where: { meal_type: "lunch" } });
-                selectedLunch = fallbackLunch;
-            }
+    if (!selectedLunch) {
+        const fallbacks = await Meal.findAll({ where: { meal_type: "lunch" } });
+        selectedLunch = selectClosest(fallbacks, lunchTarget);
+    }
 
-            if (!selectedDinner) {
-                const fallbackDinner = await Meal.findOne({ where: { meal_type: "dinner" } });
-                selectedDinner = fallbackDinner;
-            }
+    if (!selectedDinner) {
+        const fallbacks = await Meal.findAll({ where: { meal_type: "dinner" } });
+        selectedDinner = selectClosest(fallbacks, dinnerTarget);
+    }
 
     /* ==============================
        9️⃣ RETURN FINAL PLAN
