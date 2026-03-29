@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NutriSync AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>NutriSync AI</h1>
+<a href=""><button>Home</button></a>
+
+<div class="container animate">
+    <input id="name" placeholder="Name">
+    <input id="age" type="number" placeholder="Age">
+    <input id="height" type="number" placeholder="Height (cm)">
+    <input id="weight" type="number" placeholder="Weight (kg)">
+
+    <select id="gender">
+        <option>Male</option>
+        <option>Female</option>
+    </select>
+
+    <select id="activity">
+        <option value="sedentary">Sedentary</option>
+        <option value="light">Light</option>
+        <option value="moderate">Moderate</option>
+        <option value="active">Active</option>
+    </select>
+
+    <input id="goal" placeholder="Goal (Weight Loss / Muscle Gain)">
+    <textarea id="question" placeholder="Ask your health question"></textarea>
+
+    <button onclick="sendData()">Ask NutriSync</button>
+
+    <h3>AI Response:</h3>
+    <div id="response"></div>
+
+    <h3>Health Report:</h3>
+    <pre id="report"></pre>
+    <button onclick="downloadPDF()">Download Report PDF</button>
+</div>
+
+<script src="../public/script.js"></script>
+</body>
+</html>

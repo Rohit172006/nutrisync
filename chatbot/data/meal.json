@@ -1,0 +1,7 @@
+[
+  { "name": "Oats with Milk", "calories": 250, "protein": 12, "carbs": 40, "fats": 6 },
+  { "name": "Grilled Chicken Breast", "calories": 300, "protein": 45, "carbs": 0, "fats": 8 },
+  { "name": "Paneer Salad", "calories": 320, "protein": 20, "carbs": 15, "fats": 18 },
+  { "name": "Boiled Eggs", "calories": 150, "protein": 12, "carbs": 1, "fats": 10 },
+  { "name": "Brown Rice", "calories": 220, "protein": 5, "carbs": 45, "fats": 2 }
+]
